@@ -40,3 +40,7 @@ def pay(request):
 
 def maps(request):
     return render(request, 'maps.html')
+
+
+def emergency_contact(request):
+    return render(request, 'contacts.html')

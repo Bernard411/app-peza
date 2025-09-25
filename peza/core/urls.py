@@ -16,5 +16,6 @@ urlpatterns = [
     path('near_by_places/', views.near_by_places, name='near_by_places'),
     path('pay/', views.pay, name='pay'),
     path('maps/', views.maps, name='maps'),
+    path('emergency_contact/', views.emergency_contact, name='emergency_contact'),
     
 ]

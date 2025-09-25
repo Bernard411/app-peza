@@ -1,0 +1,377 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Emergency Contacts - Safety App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#000000',
+            secondary: '#FFFFFF',
+            accent: '#AAAAAA',
+            surface: '#000000',
+            'surface-light': '#1A1A1A',
+            'text-primary': '#FFFFFF',
+            'text-secondary': '#CCCCCC',
+            'border-light': '#333333',
+            'emergency': '#FF3333'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --primary: #000000;
+      --secondary: #FFFFFF;
+      --accent: #AAAAAA;
+      --surface: #000000;
+      --surface-light: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: #CCCCCC;
+      --border-light: #333333;
+      --emergency: #FF3333;
+      --radius: 10px;
+      --shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--surface);
+      margin: 0;
+      font-size: 10px; /* Minimized base font size */
+      overflow: hidden;
+      height: 100vh;
+      transition: background 0.3s ease;
+    }
+    body.light {
+      --primary: #FFFFFF;
+      --secondary: #000000;
+      --accent: #666666;
+      --surface: #F5F5F7;
+      --surface-light: #FFFFFF;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-light: #E5E5E7;
+      background: var(--surface);
+    }
+    #app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px;
+      padding-bottom: 70px; /* Adjusted for bottom nav */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+    .btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--secondary);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 10px; /* Minimized font size */
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-emergency {
+      background: var(--emergency);
+      color: white;
+      border: 1px solid var(--emergency);
+      font-size: 8px; /* Smaller for compact call buttons */
+    }
+    .btn-filled {
+      background: var(--secondary);
+      color: var(--primary);
+      border: 1px solid var(--secondary);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      min-width: 45px;
+      font-size: 8px; /* Minimized font size */
+    }
+    .nav-item.active {
+      color: var(--secondary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .section-title {
+      font-size: 12px; /* Minimized font size */
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title svg {
+      width: 14px;
+      height: 14px;
+      color: var(--secondary);
+    }
+    .contact-item {
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .contact-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .contact-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 10px; /* Minimized font size */
+      margin-bottom: 2px;
+    }
+    .contact-number {
+      font-size: 8px; /* Minimized font size */
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 24px 12px;
+      color: var(--text-secondary);
+      font-size: 10px; /* Minimized font size */
+    }
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .error-message {
+      text-align: center;
+      padding: 12px;
+      color: var(--emergency);
+      font-size: 8px; /* Minimized font size */
+      display: none;
+    }
+    @media (max-width: 480px) {
+      body { font-size: 8px; }
+      .btn { font-size: 8px; padding: 6px 10px; }
+      .btn-emergency { font-size: 7px; padding: 6px 8px; }
+      .theme-toggle { width: 28px; height: 28px; top: 10px; right: 10px; }
+      .theme-toggle svg { width: 14px; height: 14px; }
+      .nav-item { font-size: 7px; }
+      .section-title { font-size: 10px; }
+      .section-title svg { width: 12px; height: 12px; }
+      .contact-item { padding: 8px; }
+      .contact-name { font-size: 8px; }
+      .contact-number { font-size: 7px; }
+      .empty-state { font-size: 8px; }
+      .empty-state svg { width: 32px; height: 32px; }
+      .error-message { font-size: 7px; }
+      .header-title { font-size: 12px; }
+      .header-desc { font-size: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Header -->
+    <div class="px-4 pt-4 pb-3">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-2">
+          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </a>
+          <div>
+            <h2 class="header-title text-sm font-semibold text-white">Emergency Contacts</h2>
+            <p class="header-desc text-8px text-gray-400">Manage your emergency contacts</p>
+          </div>
+        </div>
+        <button class="btn-filled" onclick="selectContacts()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Contact
+        </button>
+      </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <svg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <div class="px-4">
+        <!-- Error Message -->
+        <div id="error-message" class="error-message">
+          Contact Picker API is not supported in this browser. Please try on a supported browser (e.g., Chrome on Android).
+        </div>
+        <!-- Contacts List -->
+        <h3 class="section-title">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Your Emergency Contacts
+        </h3>
+        <div id="contacts-list">
+          <!-- Contacts will be dynamically added here -->
+        </div>
+        <!-- Empty State -->
+        <div id="empty-contacts" class="empty-state">
+          <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <h3 class="text-sm font-semibold mb-1">No contacts added</h3>
+          <p class="text-8px text-gray-400">Add emergency contacts using the button above.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    {% include 'bottom_nav.html' %}
+  </div>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+      } else {
+        body.classList.add('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+      }
+    }
+
+    // Contact selection
+    async function selectContacts() {
+      if (!('contacts' in navigator && 'select' in navigator.contacts)) {
+        document.getElementById('error-message').style.display = 'block';
+        return;
+      }
+
+      try {
+        const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+        const contactsList = document.getElementById('contacts-list');
+        const emptyState = document.getElementById('empty-contacts');
+
+        // Clear existing contacts
+        contactsList.innerHTML = '';
+
+        if (contacts.length === 0) {
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+        contacts.forEach(contact => {
+          const contactItem = document.createElement('div');
+          contactItem.className = 'contact-item';
+          const contactNumber = contact.tel && contact.tel.length > 0 ? contact.tel[0] : 'No number';
+          contactItem.innerHTML = `
+            <div class="contact-content">
+              <div class="contact-name">${contact.name[0] || 'Unknown'}</div>
+              <div class="contact-number">${contactNumber}</div>
+            </div>
+            <button class="btn btn-emergency" onclick="callContact('${contactNumber}')">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              Call
+            </button>
+          `;
+          contactsList.appendChild(contactItem);
+        });
+      } catch (error) {
+        console.error('Error selecting contacts:', error);
+        document.getElementById('error-message').style.display = 'block';
+      }
+    }
+
+    // Call contact
+    function callContact(number) {
+      if (number === 'No number') {
+        alert('No phone number available for this contact.');
+        return;
+      }
+      alert(`Simulated call to ${number}. In a real app, this would initiate a call.`);
+      // In real app, use: window.location.href = `tel:${number}`;
+    }
+  </script>
+</body>
+</html>
