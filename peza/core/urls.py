@@ -15,5 +15,6 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('near_by_places/', views.near_by_places, name='near_by_places'),
     path('pay/', views.pay, name='pay'),
+    path('maps/', views.maps, name='maps'),
     
 ]

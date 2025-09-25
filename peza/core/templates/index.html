@@ -341,12 +341,16 @@
             </svg>
             Emergency Contact
           </button>
+         
           <button class="btn w-[48%] justify-center" onclick="viewMap()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7l6-3 5.447 2.724A1 1 0 0121 7.618v10.764a1 1 0 01-1.447.894L15 17l-6 3z" />
             </svg>
+             <a href="{% url 'maps'%}">
             View Map
+             </a>
           </button>
+          
           <button class="btn w-[48%] justify-center" onclick="sendMessage()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

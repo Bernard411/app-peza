@@ -37,3 +37,6 @@ def near_by_places(request):
 
 def pay(request):
     return render(request, 'pay.html')
+
+def maps(request):
+    return render(request, 'maps.html')
