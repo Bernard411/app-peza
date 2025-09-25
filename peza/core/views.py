@@ -51,3 +51,6 @@ def emergency_contact(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+def signup(request):
+    return render(request, 'signup.html')
