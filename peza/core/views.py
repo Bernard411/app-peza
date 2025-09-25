@@ -28,3 +28,6 @@ def settings(request):
 
 def services(request):
     return render(request, 'services.html')
+
+def inbox(request):
+    return render(request, 'inbox.html')

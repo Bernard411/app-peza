@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
@@ -616,36 +617,300 @@ document.addEventListener('DOMContentLoaded', function() {
           </h3>
           <div class="card p-6 grid grid-cols-2 gap-4">
             <button class="btn-emergency w-full" onclick="callEmergency('999', 'Police')">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
+             <img src="{% static 'mps.png' %}" style="width: 50px;" alt="">
               Police
             </button>
             <button class="btn-emergency w-full" onclick="callEmergency('998', 'Ambulance')">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
+          <img src="{% static 'hos.png' %}" style="width: 50px;" alt="">
               Ambulance
             </button>
             <button class="btn-emergency w-full" onclick="callEmergency('0900', 'ESCOM')">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+             <img src="https://www.escom.mw/wp-content/uploads/2023/06/ESCOM-Logo-512-1.png" style="width: 50px;" alt="">
               ESCOM
             </button>
             <button class="btn-emergency w-full" onclick="callEmergency('0888', 'Waterboard')">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-              </svg>
+             <img src="{% static 'water.png' %}" style="width: 50px;" alt="">
               Waterboard
             </button>
 
            
 
           </div>
+
+          
         </div>
+        <!-- Add this CSS -->
+<style>
+.pachineba-section {
+  margin: 20px 0;
+}
+
+.neighborhood-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--surface-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.neighbor-card {
+  background: var(--surface-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.neighbor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.neighbor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.neighbor-info {
+  flex: 1;
+}
+
+.neighbor-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.neighbor-distance {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.neighbor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.neighbor-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.incident-map {
+  height: 150px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  margin: 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-marker {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.marker-incident {
+  background: #FF4444;
+  box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.3);
+}
+
+.marker-safe {
+  background: #00AA55;
+  box-shadow: 0 0 0 3px rgba(0, 170, 85, 0.3);
+}
+
+.marker-warning {
+  background: #FFAA00;
+  box-shadow: 0 0 0 3px rgba(255, 170, 0, 0.3);
+}
+</style>
+
+<!-- Add this HTML to your main app content -->
+<div class="px-6 mb-6">
+  <h3 class="section-title">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+    Pachineba (My Neighborhood)
+  </h3>
+  
+  <div class="card p-4">
+    <!-- Neighborhood Stats -->
+    <div class="neighborhood-stats">
+      <div class="stat-card">
+        <div class="stat-value">42</div>
+        <div class="stat-label">Neighbors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Incidents</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">98%</div>
+        <div class="stat-label">Safety Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Active Groups</div>
+      </div>
+    </div>
+    
+    <!-- Incident Map -->
+    <!-- <div class="incident-map">
+      <div class="map-marker marker-incident" style="top: 30%; left: 25%;"></div>
+      <div class="map-marker marker-safe" style="top: 60%; left: 70%;"></div>
+      <div class="map-marker marker-warning" style="top: 45%; left: 50%;"></div>
+      <div class="map-marker marker-safe" style="top: 75%; left: 35%;"></div>
+    </div>
+     -->
+    <!-- Nearby Neighbors -->
+    <h4 class="text-lg font-semibold text-white mb-3">Nearby Neighbors</h4>
+    <div class="neighbors-list">
+      <div class="neighbor-card">
+        <div class="neighbor-avatar">
+          <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Sarah M">
+        </div>
+        <div class="neighbor-info">
+          <div class="neighbor-name">Sarah M.</div>
+          <div class="neighbor-distance">0.2 km away • Safety Volunteer</div>
+        </div>
+        <div class="neighbor-actions">
+          <button class="neighbor-action-btn" onclick="messageNeighbor('Sarah M.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </button>
+          <button class="neighbor-action-btn" onclick="viewNeighborProfile('Sarah M.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="neighbor-card">
+        <div class="neighbor-avatar">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="David K">
+        </div>
+        <div class="neighbor-info">
+          <div class="neighbor-name">David K.</div>
+          <div class="neighbor-distance">0.5 km away • Neighborhood Watch</div>
+        </div>
+        <div class="neighbor-actions">
+          <button class="neighbor-action-btn" onclick="messageNeighbor('David K.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </button>
+          <button class="neighbor-action-btn" onclick="viewNeighborProfile('David K.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="neighbor-card">
+        <div class="neighbor-avatar">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Lisa T">
+        </div>
+        <div class="neighbor-info">
+          <div class="neighbor-name">Lisa T.</div>
+          <div class="neighbor-distance">0.8 km away • Community Leader</div>
+        </div>
+        <div class="neighbor-actions">
+          <button class="neighbor-action-btn" onclick="messageNeighbor('Lisa T.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </button>
+          <button class="neighbor-action-btn" onclick="viewNeighborProfile('Lisa T.')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Neighborhood Actions -->
+    <div class="flex gap-3 mt-4">
+      <button class="btn flex-1" onclick="joinNeighborhood()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+        Join Group
+      </button>
+      <button class="btn flex-1" onclick="reportNeighborhoodIssue()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        Report Issue
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add these JavaScript functions -->
+<script>
+function messageNeighbor(name) {
+  alert(`Opening chat with ${name}`);
+  // In a real app, this would open a chat interface
+}
+
+function viewNeighborProfile(name) {
+  alert(`Viewing profile of ${name}`);
+  // In a real app, this would show the neighbor's profile
+}
+
+function joinNeighborhood() {
+  alert('Joining neighborhood group...');
+}
+
+function reportNeighborhoodIssue() {
+  alert('Reporting neighborhood issue...');
+}
+</script>
         <!-- Nearby Places -->
-        <div class="px-6 mb-6">
+        <!-- <div class="px-6 mb-6">
           <h3 class="section-title">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             Nearby Places
@@ -665,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Bottom Navigation -->
    {% include 'bottom_nav.html' %}
