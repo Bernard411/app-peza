@@ -491,6 +491,182 @@
             </div>
           </div>
         </div>
+        <style>
+  .family-section {
+    margin: 12px 0;
+  }
+  .section-title {
+    font-size: 12px; /* Minimized font size */
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 12px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-title svg {
+    width: 14px;
+    height: 14px;
+    color: var(--secondary);
+  }
+  .family-row {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 8px 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .family-row::-webkit-scrollbar {
+    display: none;
+  }
+  .family-member {
+    position: relative;
+    flex: 0 0 auto;
+    text-align: center;
+  }
+  .family-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+  }
+  .family-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .family-name {
+    font-size: 8px; /* Minimized font size */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 4px;
+    white-space: nowrap;
+  }
+  .status-icon {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--surface-light);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .status-icon svg {
+    width: 10px;
+    height: 10px;
+  }
+  .status-safe {
+    color: #00AA55; /* Green for Safe */
+  }
+  .status-danger {
+    color: #FF3333; /* Red for In Danger */
+  }
+  .status-help {
+    color: #FFAA00; /* Orange for Help */
+  }
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 10px;
+    }
+    .section-title svg {
+      width: 12px;
+      height: 12px;
+    }
+    .family-row {
+      gap: 10px;
+      padding: 6px 0;
+    }
+    .family-avatar {
+      width: 40px;
+      height: 40px;
+    }
+    .family-name {
+      font-size: 7px;
+    }
+    .status-icon {
+      width: 14px;
+      height: 14px;
+    }
+    .status-icon svg {
+      width: 8px;
+      height: 8px;
+    }
+  }
+</style>
+
+<div class="family-section">
+  <h3 class="section-title">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v2h5m-2-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    My Family
+  </h3>
+  <div class="family-row">
+    <!-- Family Member 1 -->
+    <div class="family-member" onclick="viewFamilyMember('John')">
+      <div class="family-avatar">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="John">
+      </div>
+      <div class="family-name">John</div>
+      <div class="status-icon status-safe">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+    </div>
+    <!-- Family Member 2 -->
+    <div class="family-member" onclick="viewFamilyMember('Sarah')">
+      <div class="family-avatar">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Sarah">
+      </div>
+      <div class="family-name">Sarah</div>
+      <div class="status-icon status-danger">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+    </div>
+    <!-- Family Member 3 -->
+    <div class="family-member" onclick="viewFamilyMember('Michael')">
+      <div class="family-avatar">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Michael">
+      </div>
+      <div class="family-name">Michael</div>
+      <div class="status-icon status-help">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+    </div>
+    <!-- Family Member 4 -->
+    <div class="family-member" onclick="viewFamilyMember('Emma')">
+      <div class="family-avatar">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Emma">
+      </div>
+      <div class="family-name">Emma</div>
+      <div class="status-icon status-safe">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function viewFamilyMember(name) {
+    alert(`Viewing details for ${name}...`);
+    // In real app, navigate to family member profile or show details
+  }
+</script>
       </div>
 
       
