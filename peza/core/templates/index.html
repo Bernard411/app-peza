@@ -107,9 +107,7 @@
       background: rgba(255, 255, 255, 0.1);
     }
     .btn-filled {
-      background
-
-: var(--secondary);
+      background: var(--secondary);
       color: var(--primary);
       border: 1px solid var(--secondary);
     }
@@ -129,9 +127,7 @@
     }
     .bottom-nav {
       position: fixed;
-      bottom: --
-
-0;
+      bottom: 0;
       left: 0;
       right: 0;
       background: var(--surface);
@@ -189,7 +185,7 @@
     }
     .service-card:active {
       transform: scale(0.98);
-      background: rgba(255, 255, 255,  ascended);
+      background: rgba(255, 255, 255, 0.05);
     }
     .service-icon {
       width: 32px;
@@ -329,15 +325,15 @@
       .service-icon svg { width: 14px; height: 14px; }
       .quick-action-icon { width: 24px; height: 24px; }
       .quick-action-icon svg { width: 12px; height: 12px; }
+      .header-title { font-size: 12px; }
+      .header-desc { font-size: 8px; }
     }
   </style>
 </head>
 <body>
   <div id="app-container">
     <!-- Header -->
-    <div class="px-4 pt-4 pb-3സ
-
-ystem: 3 pb-3">
+    <div class="px-4 pt-4 pb-3">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
           <a href="index.html" class="p-1.5 rounded-full bg-white/10">
@@ -346,8 +342,8 @@ ystem: 3 pb-3">
             </svg>
           </a>
           <div>
-            <h2 class="text-base font-semibold text-white">Services</h2>
-            <p class="text-xs text-gray-400">Access safety and utility services</p>
+            <h2 class="header-title text-sm font-semibold text-white">Services</h2>
+            <p class="header-desc text-8px text-gray-400">Access safety and utility services</p>
           </div>
         </div>
         <button class="p-1.5 rounded-full bg-white/10" onclick="showServiceHistory()">
@@ -359,9 +355,7 @@ ystem: 3 pb-3">
       
       <!-- Search Bar -->
       <div class="search-container">
-        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 
-
-24">
+        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input type="text" placeholder="Search services..." class="input search-input" id="serviceSearch">
@@ -370,7 +364,7 @@ ystem: 3 pb-3">
 
     <!-- Theme Toggle -->
     <div class="theme-toggle" onclick="toggleTheme()">
-      <svg dolg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
       </svg>
     </div>
@@ -408,7 +402,7 @@ ystem: 3 pb-3">
             </svg>
           </div>
           <div class="quick-action-content">
-            <div class="quick26quick-action-title">Request Safety Escort</div>
+            <div class="quick-action-title">Request Safety Escort</div>
             <div class="quick-action-desc">Get accompanied to your destination</div>
           </div>
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -430,7 +424,7 @@ ystem: 3 pb-3">
           <div class="service-card" onclick="callEmergency('999', 'Police')">
             <div class="service-icon">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
             <div class="service-name">Police</div>
@@ -470,10 +464,10 @@ ystem: 3 pb-3">
         </div>
       </div>
 
-  <!-- Utility Services -->
-      <div class="px-6 mb-6">
+      <!-- Utility Services -->
+      <div class="px-4 mb-4">
         <h3 class="section-title">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           Utility Services
@@ -482,7 +476,7 @@ ystem: 3 pb-3">
         <div class="service-grid">
           <div class="service-card" onclick="contactService('ESCOM')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -492,7 +486,7 @@ ystem: 3 pb-3">
           
           <div class="service-card" onclick="contactService('Water Board')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
               </svg>
             </div>
@@ -502,7 +496,7 @@ ystem: 3 pb-3">
           
           <div class="service-card" onclick="contactService('Waste Management')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </div>
@@ -512,7 +506,7 @@ ystem: 3 pb-3">
           
           <div class="service-card" onclick="contactService('Internet Provider')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
               </svg>
             </div>
@@ -523,9 +517,9 @@ ystem: 3 pb-3">
       </div>
 
       <!-- Active Service Requests -->
-      <div class="px-6 mb-6">
+      <div class="px-4 mb-4">
         <h3 class="section-title">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           Active Requests
@@ -533,7 +527,7 @@ ystem: 3 pb-3">
         
         <div class="quick-action">
           <div class="quick-action-icon">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
@@ -546,7 +540,7 @@ ystem: 3 pb-3">
         
         <div class="quick-action">
           <div class="quick-action-icon">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
             </svg>
           </div>
@@ -558,8 +552,9 @@ ystem: 3 pb-3">
         </div>
       </div>
     </div>
-      <!-- Bottom Navigation -->
-   {% include 'bottom_nav.html' %}
+
+    <!-- Bottom Navigation -->
+    {% include 'bottom_nav.html' %}
   </div>
 
   <script>
