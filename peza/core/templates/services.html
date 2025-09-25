@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
@@ -5,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Services - Safety App</title>
   <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -35,8 +36,8 @@
       --text-primary: #FFFFFF;
       --text-secondary: #CCCCCC;
       --border-light: #333333;
-      --radius: 16px;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      --radius: 10px;
+      --shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
     }
     * {
       box-sizing: border-box;
@@ -44,9 +45,10 @@
     body {
       font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--surface);
-      height: 100vh;
-      overflow: hidden;
       margin: 0;
+      font-size: 10px; /* Minimized base font size */
+      overflow: hidden;
+      height: 100vh;
       transition: background 0.3s ease;
     }
     body.light {
@@ -65,12 +67,16 @@
       display: flex;
       flex-direction: column;
       background: transparent;
+      overflow: hidden;
     }
     .content {
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 100px;
+      padding: 12px;
+      padding-bottom: 70px; /* Adjusted for bottom nav */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     .content::-webkit-scrollbar { display: none; }
     .card {
@@ -80,54 +86,59 @@
       border: 1px solid var(--border-light);
       position: relative;
       overflow: hidden;
+      margin-bottom: 10px;
     }
     .btn {
       background: transparent;
       color: var(--text-primary);
-      border: 2px solid var(--secondary);
-      border-radius: 12px;
-      padding: 14px 24px;
+      border: 1px solid var(--secondary);
+      border-radius: 8px;
+      padding: 8px 12px;
       font-weight: 600;
-      font-size: 16px;
+      font-size: 10px; /* Minimized font size */
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 4px;
     }
     .btn:active {
       transform: scale(0.98);
       background: rgba(255, 255, 255, 0.1);
     }
     .btn-filled {
-      background: var(--secondary);
+      background
+
+: var(--secondary);
       color: var(--primary);
-      border: 2px solid var(--secondary);
+      border: 1px solid var(--secondary);
     }
     .input {
       background: var(--surface);
       border: 1px solid var(--border-light);
-      border-radius: 12px;
-      padding: 12px 16px;
+      border-radius: 8px;
+      padding: 8px 10px;
       color: var(--text-primary);
-      font-size: 16px;
+      font-size: 10px; /* Minimized font size */
       transition: border-color 0.3s ease;
     }
     .input:focus {
       outline: none;
       border-color: var(--secondary);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
     }
     .bottom-nav {
       position: fixed;
-      bottom: 0;
+      bottom: --
+
+0;
       left: 0;
       right: 0;
       background: var(--surface);
       border-top: 1px solid var(--border-light);
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
+      padding: 6px 0;
       z-index: 100;
     }
     .nav-item {
@@ -136,117 +147,126 @@
       align-items: center;
       color: var(--text-secondary);
       text-decoration: none;
-      padding: 8px;
-      border-radius: 12px;
+      padding: 4px;
+      border-radius: 8px;
       transition: all 0.3s ease;
-      min-width: 60px;
+      min-width: 45px;
+      font-size: 8px; /* Minimized font size */
     }
     .nav-item.active {
       color: var(--secondary);
       background: rgba(255, 255, 255, 0.1);
     }
     .section-title {
-      font-size: 20px;
+      font-size: 12px; /* Minimized font size */
       font-weight: 700;
       color: var(--text-primary);
-      margin: 20px 0 14px;
+      margin: 12px 0 8px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
     .section-title svg {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       color: var(--secondary);
     }
     .service-category {
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
     .service-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 8px;
     }
     .service-card {
       background: var(--surface-light);
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 10px;
       text-align: center;
       transition: all 0.3s ease;
     }
     .service-card:active {
       transform: scale(0.98);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255,  ascended);
     }
     .service-icon {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 12px;
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 8px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .service-icon svg {
-      width: 24px;
-      height: 24px;
+      width: 16px;
+      height: 16px;
       color: var(--secondary);
     }
     .service-name {
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 4px;
+      font-size: 10px; /* Minimized font size */
+      margin-bottom: 3px;
     }
     .service-desc {
-      font-size: 12px;
+      font-size: 8px; /* Minimized font size */
       color: var(--text-secondary);
     }
     .search-container {
       position: relative;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .search-input {
       width: 100%;
-      padding-left: 40px;
+      padding-left: 28px;
+      font-size: 10px; /* Minimized font size */
     }
     .search-icon {
       position: absolute;
-      left: 12px;
+      left: 8px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-secondary);
+      width: 14px;
+      height: 14px;
     }
     .theme-toggle {
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 12px;
+      right: 12px;
       z-index: 100;
       background: var(--surface-light);
       border: 1px solid var(--border-light);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       box-shadow: var(--shadow);
     }
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
     .quick-action {
       background: var(--surface-light);
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
-      padding: 16px;
-      margin: 12px 0;
+      padding: 10px;
+      margin: 8px 0;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
     .quick-action-icon {
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.1);
       display: flex;
@@ -255,8 +275,8 @@
       flex-shrink: 0;
     }
     .quick-action-icon svg {
-      width: 20px;
-      height: 20px;
+      width: 14px;
+      height: 14px;
       color: var(--secondary);
     }
     .quick-action-content {
@@ -265,16 +285,17 @@
     .quick-action-title {
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 4px;
+      font-size: 10px; /* Minimized font size */
+      margin-bottom: 3px;
     }
     .quick-action-desc {
-      font-size: 14px;
+      font-size: 8px; /* Minimized font size */
       color: var(--text-secondary);
     }
     .status-badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 8px;
+      font-size: 8px; /* Minimized font size */
       font-weight: 600;
     }
     .status-active {
@@ -290,31 +311,47 @@
       color: #0000FF;
     }
     @media (max-width: 480px) {
-      .section-title { font-size: 18px; }
-      .btn { font-size: 14px; padding: 12px 16px; }
-      .section-title svg { width: 18px; height: 18px; }
+      body { font-size: 8px; }
+      .section-title { font-size: 10px; }
+      .section-title svg { width: 12px; height: 12px; }
+      .btn { font-size: 8px; padding: 6px 10px; }
       .service-grid { grid-template-columns: 1fr; }
+      .service-name { font-size: 8px; }
+      .service-desc { font-size: 7px; }
+      .quick-action-title { font-size: 8px; }
+      .quick-action-desc { font-size: 7px; }
+      .status-badge { font-size: 7px; }
+      .search-input { font-size: 8px; padding-left: 24px; }
+      .search-icon { width: 12px; height: 12px; left: 6px; }
+      .theme-toggle { width: 28px; height: 28px; top: 10px; right: 10px; }
+      .theme-toggle svg { width: 14px; height: 14px; }
+      .service-icon { width: 28px; height: 28px; }
+      .service-icon svg { width: 14px; height: 14px; }
+      .quick-action-icon { width: 24px; height: 24px; }
+      .quick-action-icon svg { width: 12px; height: 12px; }
     }
   </style>
 </head>
 <body>
   <div id="app-container">
     <!-- Header -->
-    <div class="px-6 pt-6 pb-4">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-3">
-          <a href="index.html" class="p-2 rounded-full bg-white/10">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="px-4 pt-4 pb-3സ
+
+ystem: 3 pb-3">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-2">
+          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </a>
           <div>
-            <h2 class="text-lg font-semibold text-white">Services</h2>
-            <p class="text-sm text-gray-400">Access safety and utility services</p>
+            <h2 class="text-base font-semibold text-white">Services</h2>
+            <p class="text-xs text-gray-400">Access safety and utility services</p>
           </div>
         </div>
-        <button class="p-2 rounded-full bg-white/10" onclick="showServiceHistory()">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="p-1.5 rounded-full bg-white/10" onclick="showServiceHistory()">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </button>
@@ -322,7 +359,9 @@
       
       <!-- Search Bar -->
       <div class="search-container">
-        <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 
+
+24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input type="text" placeholder="Search services..." class="input search-input" id="serviceSearch">
@@ -331,7 +370,7 @@
 
     <!-- Theme Toggle -->
     <div class="theme-toggle" onclick="toggleTheme()">
-      <svg id="theme-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg dolg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
       </svg>
     </div>
@@ -339,9 +378,9 @@
     <!-- Main Content -->
     <div class="content">
       <!-- Quick Actions -->
-      <div class="px-6 mb-6">
+      <div class="px-4 mb-4">
         <h3 class="section-title">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           Quick Actions
@@ -349,7 +388,7 @@
         
         <div class="quick-action" onclick="reportIssue()">
           <div class="quick-action-icon">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
@@ -357,31 +396,31 @@
             <div class="quick-action-title">Report Safety Issue</div>
             <div class="quick-action-desc">Report suspicious activity or safety concerns</div>
           </div>
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>
         
         <div class="quick-action" onclick="requestAssistance()">
           <div class="quick-action-icon">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div class="quick-action-content">
-            <div class="quick-action-title">Request Safety Escort</div>
+            <div class="quick26quick-action-title">Request Safety Escort</div>
             <div class="quick-action-desc">Get accompanied to your destination</div>
           </div>
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>
 
       <!-- Emergency Services -->
-      <div class="px-6 mb-6">
+      <div class="px-4 mb-4">
         <h3 class="section-title">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           Emergency Services
@@ -390,8 +429,8 @@
         <div class="service-grid">
           <div class="service-card" onclick="callEmergency('999', 'Police')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2-2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
             <div class="service-name">Police</div>
@@ -400,7 +439,7 @@
           
           <div class="service-card" onclick="callEmergency('998', 'Ambulance')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
             </div>
@@ -410,7 +449,7 @@
           
           <div class="service-card" onclick="callEmergency('997', 'Fire Department')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
               </svg>
@@ -421,7 +460,7 @@
           
           <div class="service-card" onclick="callEmergency('0966', 'Road Assistance')">
             <div class="service-icon">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
@@ -431,7 +470,7 @@
         </div>
       </div>
 
-      <!-- Utility Services -->
+  <!-- Utility Services -->
       <div class="px-6 mb-6">
         <h3 class="section-title">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
