@@ -1,0 +1,497 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Subscribe - Safety App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#000000',
+            secondary: '#FFFFFF',
+            accent: '#AAAAAA',
+            surface: '#000000',
+            'surface-light': '#1A1A1A',
+            'text-primary': '#FFFFFF',
+            'text-secondary': '#CCCCCC',
+            'border-light': '#333333',
+            'success': '#00AA55',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --primary: #000000;
+      --secondary: #FFFFFF;
+      --accent: #AAAAAA;
+      --surface: #000000;
+      --surface-light: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: #CCCCCC;
+      --border-light: #333333;
+      --success: #00AA55;
+      --radius: 10px;
+      --shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--surface);
+      margin: 0;
+      font-size: 10px; /* Minimized base font size */
+      overflow: hidden;
+      height: 100vh;
+      transition: background 0.3s ease;
+    }
+    body.light {
+      --primary: #FFFFFF;
+      --secondary: #000000;
+      --accent: #666666;
+      --surface: #F5F5F7;
+      --surface-light: #FFFFFF;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-light: #E5E5E7;
+      background: var(--surface);
+    }
+    #app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px;
+      padding-bottom: 70px; /* Adjusted for bottom nav */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+    .card {
+      background: var(--surface-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--secondary);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 10px; /* Minimized font size */
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-filled {
+      background: var(--secondary);
+      color: var(--primary);
+      border: 1px solid var(--secondary);
+    }
+    .btn-success {
+      background: var(--success);
+      color: white;
+      border: 1px solid var(--success);
+      font-weight: 700;
+    }
+    .input {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-size: 10px; /* Minimized font size */
+      transition: border-color 0.3s ease;
+    }
+    .input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      min-width: 45px;
+      font-size: 8px; /* Minimized font size */
+    }
+    .nav-item.active {
+      color: var(--secondary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .section-title {
+      font-size: 12px; /* Minimized font size */
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title svg {
+      width: 14px;
+      height: 14px;
+      color: var(--secondary);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
+    .subscription-card {
+      background: var(--surface-light);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+      border: 2px solid var(--success);
+    }
+    .subscription-title {
+      font-size: 14px; /* Minimized font size */
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .subscription-price {
+      font-size: 24px; /* Slightly larger for emphasis */
+      font-weight: 800;
+      color: var(--success);
+      margin-bottom: 6px;
+    }
+    .subscription-features {
+      margin-bottom: 12px;
+    }
+    .feature-item {
+      font-size: 8px; /* Minimized font size */
+      color: var(--text-secondary);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .feature-icon {
+      width: 12px;
+      height: 12px;
+      color: var(--success);
+    }
+    .payment-form {
+      background: var(--surface-light);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    .form-label {
+      font-size: 8px; /* Minimized font size */
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .payment-method {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .payment-option {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 8px; /* Minimized font size */
+    }
+    .payment-option.active {
+      border-color: var(--success);
+      background: rgba(0, 170, 85, 0.1);
+    }
+    .card-details {
+      display: none;
+    }
+    .card-details.active {
+      display: block;
+    }
+    .card-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    .subscribe-btn {
+      width: 100%;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 10px; /* Minimized font size */
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 12px;
+    }
+    .subscribe-btn:active {
+      transform: scale(0.98);
+    }
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 16px;
+      background: var(--surface-light);
+      border-radius: var(--radius);
+      border: 2px solid var(--success);
+    }
+    .success-message.active {
+      display: block;
+    }
+    .success-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--success);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 480px) {
+      body { font-size: 8px; }
+      .section-title { font-size: 10px; }
+      .section-title svg { width: 12px; height: 12px; }
+      .btn { font-size: 8px; padding: 6px 10px; }
+      .subscription-title { font-size: 12px; }
+      .subscription-price { font-size: 20px; }
+      .feature-item { font-size: 7px; }
+      .form-label { font-size: 7px; }
+      .payment-option { font-size: 7px; padding: 6px; }
+      .subscribe-btn { font-size: 8px; padding: 10px; }
+      .theme-toggle { width: 28px; height: 28px; top: 10px; right: 10px; }
+      .theme-toggle svg { width: 14px; height: 14px; }
+      .header-title { font-size: 12px; }
+      .header-desc { font-size: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Header -->
+    <div class="px-4 pt-4 pb-3">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-2">
+          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </a>
+          <div>
+            <h2 class="header-title text-sm font-semibold text-white">Subscribe</h2>
+            <p class="header-desc text-8px text-gray-400">Premium Safety Features</p>
+          </div>
+        </div>
+        <button class="p-1.5 rounded-full bg-white/10" onclick="toggleTheme()">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Subscription Card -->
+      <div class="px-4 mb-4">
+        <div class="subscription-card">
+          <h3 class="subscription-title">Premium Safety Plan</h3>
+          <div class="subscription-price">MK 10,000 / month</div>
+          <div class="subscription-features">
+            <div class="feature-item">
+              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Unlimited place alerts
+            </div>
+            <div class="feature-item">
+              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Priority emergency support
+            </div>
+            <div class="feature-item">
+              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Advanced location tracking
+            </div>
+            <div class="feature-item">
+              <svg class="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              Community chat access
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="px-4 mb-4">
+        <div class="payment-form">
+          <h3 class="section-title">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12" />
+            </svg>
+            Payment Method
+          </h3>
+          <div class="payment-method">
+            <div class="payment-option active" onclick="selectPayment('card')">
+              <img src="https://via.placeholder.com/16x10/0000FF/FFFFFF?text=V" class="card-icon" alt="Visa">
+              Credit/Debit Card
+            </div>
+            <div class="payment-option" onclick="selectPayment('mobile')">
+              <img src="https://via.placeholder.com/16x10/00AA00/FFFFFF?text=M" class="card-icon" alt="Mobile Money">
+              Mobile Money
+            </div>
+          </div>
+          <div id="card-details" class="card-details active">
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" class="input w-full">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Expiry Date</label>
+              <input type="text" placeholder="MM/YY" class="input w-1/2">
+              <label class="form-label" style="margin-left: 8px;">CVV</label>
+              <input type="text" placeholder="123" class="input w-1/2" style="margin-left: 8px;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Name on Card</label>
+              <input type="text" placeholder="John Doe" class="input w-full">
+            </div>
+          </div>
+          <div id="mobile-details" class="card-details">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" placeholder="+265 999 123 456" class="input w-full">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Provider</label>
+              <select class="input w-full">
+                <option>Airtel Money</option>
+                <option>TNM Mpamba</option>
+              </select>
+            </div>
+          </div>
+          <button class="subscribe-btn" onclick="processSubscription()">Subscribe Now</button>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div id="success-message" class="success-message">
+        <svg class="success-icon mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <h3 class="text-sm font-semibold mb-2">Subscription Successful!</h3>
+        <p class="text-8px text-gray-400 mb-4">Your Premium Safety Plan is now active.</p>
+        <button class="btn-filled" onclick="goToHome()">Continue to App</button>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    {% include 'bottom_nav.html' %}
+  </div>
+
+  <script>
+    let selectedPayment = 'card';
+
+    function selectPayment(method) {
+      selectedPayment = method;
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('card-details').classList.toggle('active', method === 'card');
+      document.getElementById('mobile-details').classList.toggle('active', method === 'mobile');
+    }
+
+    function processSubscription() {
+      // Simulate payment processing
+      setTimeout(() => {
+        document.querySelector('.payment-form').style.display = 'none';
+        document.getElementById('success-message').classList.add('active');
+      }, 2000);
+    }
+
+    function goToHome() {
+      alert('Redirecting to home...');
+      // In real app, redirect to home page
+    }
+
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const themeIcon = document.querySelector('.theme-toggle svg path');
+      
+      if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        themeIcon.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+      } else {
+        body.classList.add('light');
+        themeIcon.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+      }
+    }
+  </script>
+</body>
+</html>
