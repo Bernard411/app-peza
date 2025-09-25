@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Login - Safety App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#000000',
+            secondary: '#FFFFFF',
+            accent: '#AAAAAA',
+            surface: '#000000',
+            'surface-light': '#1A1A1A',
+            'text-primary': '#FFFFFF',
+            'text-secondary': '#CCCCCC',
+            'border-light': '#333333',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --primary: #000000;
+      --secondary: #FFFFFF;
+      --accent: #AAAAAA;
+      --surface: #000000;
+      --surface-light: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: #CCCCCC;
+      --border-light: #333333;
+      --radius: 16px;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--surface);
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      transition: background 0.3s ease;
+    }
+    body.light {
+      --primary: #FFFFFF;
+      --secondary: #000000;
+      --accent: #666666;
+      --surface: #F5F5F7;
+      --surface-light: #FFFFFF;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-light: #E5E5E7;
+      background: var(--surface);
+    }
+    #app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 20px;
+    }
+    .content::-webkit-scrollbar { display: none; }
+    .card {
+      background: var(--surface-light);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--secondary);
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .btn-filled {
+      background: var(--secondary);
+      color: var(--primary);
+      border: 2px solid var(--secondary);
+    }
+    .input {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+    .input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.8s ease-out;
+    }
+    .splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .logo {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--secondary);
+      margin-bottom: 8px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 20px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+    }
+    .login-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .login-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .password-container {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .remember-me input {
+      width: 18px;
+      height: 18px;
+    }
+    .remember-me label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .forgot-password {
+      font-size: 14px;
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-light);
+    }
+    .divider-text {
+      padding: 0 15px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .social-login {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .social-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .social-btn:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .social-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    .signup-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .signup-link a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .error-message {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #ff6b6b;
+      font-size: 14px;
+      display: none;
+    }
+    .success-message {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #51cf66;
+      font-size: 14px;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      .login-title { font-size: 28px; }
+      .login-card { padding: 20px; }
+      .btn { font-size: 14px; padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash" class="splash">
+    <div class="logo">Safety.</div>
+    <p class="text-white/80 text-lg">Secure Living</p>
+  </div>
+
+  <div id="app-container">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <svg id="theme-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </div>
+
+    <!-- Login Content -->
+    <div class="content">
+      <div class="login-container">
+        <div class="login-card card">
+          <h1 class="login-title">Welcome Back</h1>
+          <p class="login-subtitle">Sign in to your Safety App account</p>
+          
+          <!-- Error Message -->
+          <div id="errorMessage" class="error-message">
+            Invalid email or password. Please try again.
+          </div>
+          
+          <!-- Success Message -->
+          <div id="successMessage" class="success-message">
+            Login successful! Redirecting...
+          </div>
+          
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="email" class="form-label">Email Address</label>
+              <input type="email" id="email" class="input w-full" placeholder="Enter your email" value="007kamanga.steven@gmail.com" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="password" class="form-label">Password</label>
+              <div class="password-container">
+                <input type="password" id="password" class="input w-full" placeholder="Enter your password" required>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="remember-forgot">
+              <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Remember me</label>
+              </div>
+              <a href="forgot-password.html" class="forgot-password">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="btn w-full mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Sign In
+            </button>
+          </form>
+          
+          <div class="divider">
+            <div class="divider-line"></div>
+            <div class="divider-text">or continue with</div>
+            <div class="divider-line"></div>
+          </div>
+          
+          <div class="social-login">
+            <button class="social-btn" onclick="socialLogin('google')">
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+            </button>
+            
+            <button class="social-btn" onclick="socialLogin('apple')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+            </button>
+            
+            <button class="social-btn" onclick="socialLogin('facebook')">
+              <svg class="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="signup-link">
+            Don't have an account? <a href="signup.html">Sign up</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Splash screen
+    setTimeout(() => {
+      document.getElementById('splash').classList.add('hidden');
+    }, 2000);
+
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+      } else {
+        body.classList.add('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+      }
+    }
+
+    // Toggle password visibility
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const toggleButton = document.querySelector('.toggle-password');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleButton.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+          </svg>
+        `;
+      } else {
+        passwordInput.type = 'password';
+        toggleButton.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        `;
+      }
+    }
+
+    // Social login
+    function socialLogin(provider) {
+      alert(`Logging in with ${provider}... (Simulated for demo)`);
+      // In a real app, this would integrate with the provider's OAuth flow
+    }
+
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+      
+      // Hide any previous messages
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      // Simple validation
+      if (!email || !password) {
+        errorMessage.textContent = 'Please fill in all fields.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Simulate login process
+      if (password.length < 6) {
+        errorMessage.textContent = 'Password must be at least 6 characters.';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Simulate successful login
+      successMessage.style.display = 'block';
+      
+      // Redirect to main app after a delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
+    });
+
+    // Check if user has saved credentials
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedEmail = localStorage.getItem('safetyAppEmail');
+      const rememberMe = localStorage.getItem('safetyAppRememberMe');
+      
+      if (savedEmail && rememberMe === 'true') {
+        document.getElementById('email').value = savedEmail;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
+
+    // Save credentials if remember me is checked
+    document.getElementById('loginForm').addEventListener('submit', function() {
+      const rememberMe = document.getElementById('rememberMe').checked;
+      const email = document.getElementById('email').value;
+      
+      if (rememberMe) {
+        localStorage.setItem('safetyAppEmail', email);
+        localStorage.setItem('safetyAppRememberMe', 'true');
+      } else {
+        localStorage.removeItem('safetyAppEmail');
+        localStorage.removeItem('safetyAppRememberMe');
+      }
+    });
+  </script>
+</body>
+</html>
