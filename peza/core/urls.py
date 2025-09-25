@@ -13,5 +13,6 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('services/', views.services, name='services'),
     path('inbox/', views.inbox, name='inbox'),
+    path('near_by_places/', views.near_by_places, name='near_by_places'),
     
 ]

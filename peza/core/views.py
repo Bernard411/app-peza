@@ -31,3 +31,6 @@ def services(request):
 
 def inbox(request):
     return render(request, 'inbox.html')
+
+def near_by_places(request):
+    return render(request, 'near_by_places.html')   

@@ -392,6 +392,129 @@
         </div>
       </div>
     </div>
+<style>
+  .fab-container {
+    position: fixed;
+    bottom: 80px; /* Above bottom nav */
+    right: 12px;
+    z-index: 100;
+  }
+  .fab {
+    background: var(--secondary);
+    color: var(--primary);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .fab:active {
+    transform: scale(0.95);
+  }
+  .fab-menu {
+    position: absolute;
+    bottom: 54px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+  .fab-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .fab-menu-item {
+    background: var(--surface-light);
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    font-size: 8px; /* Minimized font size */
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .fab-menu-item:active {
+    transform: scale(0.95);
+  }
+  .fab-menu-item svg {
+    width: 14px;
+    height: 14px;
+  }
+  @media (max-width: 480px) {
+    .fab {
+      width: 40px;
+      height: 40px;
+    }
+    .fab-menu-item {
+      width: 32px;
+      height: 32px;
+      font-size: 7px;
+    }
+    .fab-menu-item svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+</style>
+
+<div class="fab-container">
+  <div class="fab" onclick="toggleFabMenu()">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+  </div>
+  <div class="fab-menu" id="fab-menu">
+    <div class="fab-menu-item" onclick="addPlace()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </div>
+    <div class="fab-menu-item" onclick="shareLocation()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.375 12.651 10.223 12.5 12 12.5c1.777 0 2.625.151 3.316.842m0 0l3.842 3.842M15.158 15.684l3.842-3.842m-8.684 0C9.375 12.651 8.527 12.5 6.75 12.5c-1.777 0-2.625.151-3.316.842m0 0l-3.842 3.842m3.842-3.842l-3.842-3.842" />
+      </svg>
+    </div>
+    <div class="fab-menu-item" onclick="reportIssue()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleFabMenu() {
+    const menu = document.getElementById('fab-menu');
+    menu.classList.toggle('open');
+  }
+
+  function addPlace() {
+    alert('Opening add place form...');
+  }
+
+  function shareLocation() {
+    alert('Sharing location...');
+  }
+
+  function reportIssue() {
+    alert('Reporting issue...');
+  }
+</script>
 
     <!-- Bottom Navigation -->
     {% include 'bottom_nav.html' %}
