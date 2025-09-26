@@ -228,8 +228,89 @@ def register(request):
 def alert(request):
     return render(request, 'alert.html')
 
-def profile(request):
-    return render(request, 'profile.html')
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import logout
+from .models import Profile, EmergencyContact
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        try:
+            profile = user.profile
+        except Profile.DoesNotExist:
+            # Create profile if it doesn't exist
+            profile = Profile.objects.create(user=user)
+        context['user'] = user
+        context['profile'] = profile
+        context['emergency_contacts'] = EmergencyContact.objects.filter(user=user)
+        return context
+
+# ... (rest of the views as previously provided)
+
+
+class UpdateNameView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        if first_name and last_name:
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+            return Response({'status': 'success', 'message': 'Name updated successfully'})
+        return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            return Response({'status': 'success', 'message': 'Password changed successfully'})
+        return Response({'error': 'Invalid old password'}, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        logout(request)  # Log out before deleting
+        user.delete()
+        return Response({'status': 'success', 'message': 'Account deleted successfully'})
+
+class ToggleNotificationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile = request.user.profile
+        profile.notifications_enabled = not profile.notifications_enabled
+        profile.save()
+        return Response({'status': 'success', 'enabled': profile.notifications_enabled})
+
+class ToggleLocationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile = request.user.profile
+        profile.location_sharing = not profile.location_sharing
+        profile.save()
+        return Response({'status': 'success', 'enabled': profile.location_sharing})
 
 def pachineba(request):
     return render(request, 'pachineba.html')
@@ -269,6 +350,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.core.exceptions import ValidationError
+from .models import Profile
 
 def signup(request):
     if request.method == 'POST':
@@ -276,12 +358,13 @@ def signup(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
+        avatar = request.FILES.get('avatar')  # Handle file upload
 
         # Validation
         if not full_name or len(full_name.strip()) < 2:
             return render(request, 'signup.html', {'error': 'Please enter a valid full name (at least 2 characters).'})
 
-        if not email or not '@' in email or not '.' in email:
+        if not email or '@' not in email or '.' not in email:
             return render(request, 'signup.html', {'error': 'Please enter a valid email.'})
 
         if not password or len(password) < 6:
@@ -290,25 +373,29 @@ def signup(request):
         if password != confirm_password:
             return render(request, 'signup.html', {'error': 'Passwords do not match.'})
 
-        # Check if email already exists
         if User.objects.filter(username=email).exists():
             return render(request, 'signup.html', {'error': 'Email is already registered.'})
 
         try:
             # Create user
             user = User.objects.create_user(
-                username=email,  # Using email as username to match login_view
+                username=email,
                 email=email,
                 password=password,
                 first_name=full_name.split()[0],
                 last_name=' '.join(full_name.split()[1:]) if len(full_name.split()) > 1 else ''
             )
-            # Log the user in after signup
+            # Explicitly create profile
+            profile = Profile.objects.create(user=user)
+            if avatar:
+                profile.avatar = avatar
+                profile.save()
+            # Log the user in
             login(request, user)
-            return render(request, 'signup.html', {'success': True})
+            return redirect('profile')  # Redirect to profile page
         except ValidationError:
             return render(request, 'signup.html', {'error': 'Invalid input provided.'})
         except Exception as e:
-            return render(request, 'signup.html', {'error': 'An error occurred during registration. Please try again.'})
+            return render(request, 'signup.html', {'error': f'An error occurred: {str(e)}'})
 
     return render(request, 'signup.html')

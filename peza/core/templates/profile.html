@@ -273,6 +273,50 @@
       .header-title { font-size: 12px; }
       .header-desc { font-size: 8px; }
     }
+    /* ... (keep all existing styles) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: var(--surface-light);
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid var(--border-light);
+      width: 80%;
+      border-radius: var(--radius);
+    }
+    .close {
+      color: var(--text-primary);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: var(--secondary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .success-check {
+      color: green;
+      font-size: 24px;
+      text-align: center;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      .modal-content {
+        width: 90%;
+        padding: 15px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -281,7 +325,7 @@
     <div class="px-4 pt-4 pb-3">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
-          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+          <a href="{% url 'home' %}" class="p-1.5 rounded-full bg-white/10">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -291,7 +335,7 @@
             <p class="header-desc text-8px text-gray-400">Manage your account and settings</p>
           </div>
         </div>
-        <button class="p-1.5 rounded-full bg-white/10" onclick="editProfile()">
+        <button class="p-1.5 rounded-full bg-white/10" onclick="openModal('editNameModal')">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
@@ -312,10 +356,10 @@
       <div class="px-4 mb-4">
         <div class="profile-card">
           <div class="profile-avatar">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User Avatar">
+            <img src="" alt="User Avatar">
           </div>
-          <h3 class="profile-name">John Doe</h3>
-          <p class="profile-email">john.doe@example.com</p>
+          <h3 class="profile-name">{{ user.get_full_name|default:user.username }}</h3>
+          <p class="profile-email">{{ user.email }}</p>
         </div>
       </div>
 
@@ -330,25 +374,36 @@
         <div class="card">
           <div class="setting-item">
             <span class="setting-label">Notifications</span>
-            <button class="btn" onclick="toggleNotifications()">Enabled</button>
+            <button class="btn" onclick="toggleNotifications(this)">
+              {% if profile.notifications_enabled %}Enabled{% else %}Disabled{% endif %}
+            </button>
           </div>
           <div class="setting-item">
             <span class="setting-label">Location Sharing</span>
-            <button class="btn" onclick="toggleLocation()">On</button>
+            <button class="btn" onclick="toggleLocation(this)">
+              {% if profile.location_sharing %}On{% else %}Off{% endif %}
+            </button>
           </div>
           <div class="setting-item">
             <span class="setting-label">Language</span>
-            <span class="setting-value">English</span>
+            <span class="setting-value">{{ profile.language }}</span>
           </div>
-           <div class="setting-item">
+          <div class="setting-item">
             <span class="setting-label">Subscription</span>
             <a href="{% url 'pay' %}" class="btn btn-filled">Manage</a>
-          
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Change Password</span>
+            <button class="btn btn-filled" onclick="openModal('changePasswordModal')">Change</button>
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Delete Account</span>
+            <button class="btn btn-filled" onclick="openModal('deleteAccountModal')">Delete</button>
           </div>
           <div class="setting-item">
             <span class="setting-label">Sign Out</span>
             <a href="{% url 'logout' %}">
-            <button class="btn btn-filled" onclick="signOut()">Sign Out</button>
+              <button class="btn btn-filled">Sign Out</button>
             </a>
           </div>
         </div>
@@ -363,56 +418,193 @@
           Emergency Contacts
         </h3>
         <div class="card">
-          <div class="contact-item">
-            <span class="contact-name">Police</span>
-            <span class="contact-number">999</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-name">Ambulance</span>
-            <span class="contact-number">998</span>
-          </div>
-          <div class="contact-item">
-            <span class="contact-name">Family Contact</span>
-            <span class="contact-number">+123-456-7890</span>
-          </div>
+          {% for contact in emergency_contacts %}
+            <div class="contact-item">
+              <span class="contact-name">{{ contact.name }}</span>
+              <span class="contact-number">{{ contact.phone_number }}</span>
+            </div>
+          {% endfor %}
+          {% if not emergency_contacts %}
+            <div class="empty-state">
+              <p>No emergency contacts added.</p>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
 
     <!-- Bottom Navigation -->
     {% include 'bottom_nav.html' %}
+
+    <!-- Modals -->
+    <!-- Edit Name Modal -->
+    <div id="editNameModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('editNameModal')">&times;</span>
+        <h3>Change Name</h3>
+        <form id="editNameForm">
+          <input type="text" id="first_name" class="input" placeholder="First Name" value="{{ user.first_name }}" required>
+          <input type="text" id="last_name" class="input" placeholder="Last Name" value="{{ user.last_name }}" required>
+            <br>
+          <button type="button" class="btn btn-filled" onclick="updateName()">Save</button>
+        </form>
+        <br>
+        <div id="nameSuccess" class="success-check">✓ Updated</div>
+      </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('changePasswordModal')">&times;</span>
+        <h3>Change Password</h3>
+        <form id="changePasswordForm">
+          <input type="password" id="old_password" class="input" placeholder="Old Password" required>
+          <input type="password" id="new_password" class="input" placeholder="New Password" required>
+            <br>
+          <button type="button" class="btn btn-filled" onclick="changePassword()">Save</button>
+        </form>
+      
+        <div id="passwordSuccess" class="success-check">✓ Updated</div>
+      </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('deleteAccountModal')">&times;</span>
+        <h3>Delete Account</h3>
+        <p>Are you sure? This action cannot be undone.</p>
+        <br>
+        <button class="btn btn-filled" onclick="deleteAccount()">Confirm Delete</button>
+        <div id="deleteSuccess" class="success-check">✓ Deleted</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Theme toggle
-    function toggleTheme() {
-      const body = document.body;
-      const themeIcon = document.getElementById('theme-icon');
-      
-      if (body.classList.contains('light')) {
-        body.classList.remove('light');
-        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
-      } else {
-        body.classList.add('light');
-        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+    // Theme toggle (keep as is)
+
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = "block";
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
+    }
+
+    // Update Name
+    function updateName() {
+      const first_name = document.getElementById('first_name').value;
+      const last_name = document.getElementById('last_name').value;
+      fetch("{% url 'update_name' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ first_name, last_name })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          document.querySelector('.profile-name').textContent = `${first_name} ${last_name}`;
+          document.getElementById('nameSuccess').style.display = 'block';
+          setTimeout(() => {
+            closeModal('editNameModal');
+            document.getElementById('nameSuccess').style.display = 'none';
+          }, 2000);
+        } else {
+          alert('Failed to update name');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Change Password
+    function changePassword() {
+      const old_password = document.getElementById('old_password').value;
+      const new_password = document.getElementById('new_password').value;
+      fetch("{% url 'change_password' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ old_password, new_password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          document.getElementById('passwordSuccess').style.display = 'block';
+          setTimeout(() => {
+            closeModal('changePasswordModal');
+            document.getElementById('passwordSuccess').style.display = 'none';
+          }, 2000);
+        } else {
+          alert(data.error);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Delete Account
+    function deleteAccount() {
+      if (confirm('Are you absolutely sure?')) {
+        fetch("{% url 'delete_account' %}", {
+          method: 'DELETE',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('deleteSuccess').style.display = 'block';
+            setTimeout(() => {
+              window.location.href = '/';  // Redirect to home or login
+            }, 2000);
+          } else {
+            alert('Failed to delete account');
+          }
+        })
+        .catch(error => console.error('Error:', error));
       }
     }
 
-    // Profile and settings functions
-    function editProfile() {
-      alert('Opening profile editor...');
+    // Toggle Notifications
+    function toggleNotifications(button) {
+      fetch("{% url 'toggle_notifications' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          button.textContent = data.enabled ? 'Enabled' : 'Disabled';
+        }
+      })
+      .catch(error => console.error('Error:', error));
     }
 
-    function toggleNotifications() {
-      alert('Toggling notifications...');
-    }
-
-    function toggleLocation() {
-      alert('Toggling location sharing...');
-    }
-
-    function signOut() {
-      alert('Signing out...');
+    // Toggle Location
+    function toggleLocation(button) {
+      fetch("{% url 'toggle_location' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          button.textContent = data.enabled ? 'On' : 'Off';
+        }
+      })
+      .catch(error => console.error('Error:', error));
     }
   </script>
 </body>

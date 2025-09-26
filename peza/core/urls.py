@@ -12,6 +12,7 @@ from .views import InboxView, DMView, NotificationDetailView, ComposeView, Messa
 from django.urls import path
 from .views import InboxView, DMView, NotificationDetailView, ComposeView, MessageListCreateView, TypingStatusView, DeleteMessageView, ClearChatView
 
+from .views import ProfileView, UpdateNameView, ChangePasswordView, DeleteAccountView, ToggleNotificationsView, ToggleLocationView
 
 from .views import InboxView, DMView, NotificationDetailView, ComposeView
 
@@ -21,7 +22,7 @@ urlpatterns = [
     path('', views.login_view, name='login'),
     path('register/', views.register, name='register'),
     path('alert/', views.alert, name='alert'),
-    path('profile/', views.profile, name='profile'),
+
     path('pachineba/', views.pachineba, name='pachineba'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('settings/', views.settings, name='settings'),
@@ -50,5 +51,13 @@ urlpatterns = [
     path('api/typing/<int:user_id>/', TypingStatusView.as_view(), name='typing_status'),
     path('api/delete-message/<int:message_id>/', DeleteMessageView.as_view(), name='delete_message'),
     path('api/clear-chat/<int:user_id>/', ClearChatView.as_view(), name='clear_chat'),
-]
 
+
+
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('api/update-name/', UpdateNameView.as_view(), name='update_name'),
+    path('api/change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('api/delete-account/', DeleteAccountView.as_view(), name='delete_account'),
+    path('api/toggle-notifications/', ToggleNotificationsView.as_view(), name='toggle_notifications'),
+    path('api/toggle-location/', ToggleLocationView.as_view(), name='toggle_location'),
+]
