@@ -29,7 +29,8 @@
     }
   </script>
   <style>
-    :root {
+    /* Existing styles remain unchanged */
+       :root {
       --primary: #000000;
       --secondary: #FFFFFF;
       --accent: #AAAAAA;
@@ -302,7 +303,7 @@
     <div class="px-4 pt-4 pb-3">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
-          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+          <a href="{% url 'home' %}" class="p-1.5 rounded-full bg-white/10">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -330,24 +331,53 @@
           <p class="signup-subtitle">Join Safety App to stay secure</p>
           
           <!-- Error Message -->
+          {% if error %}
+          <div id="errorMessage" class="error-message" style="display: block;">
+            {{ error }}
+          </div>
+          {% else %}
           <div id="errorMessage" class="error-message">
             Please fill in all fields correctly.
           </div>
+          {% endif %}
+          
+          <!-- Success Message -->
+          {% if success %}
+          <div id="successMessage" class="success-message active">
+            <svg class="success-icon mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <h3 class="text-sm font-semibold mb-2">Registration Successful!</h3>
+            <p class="text-8px text-gray-400 mb-4">Welcome to Safety App.</p>
+            <a href="{% url 'login' %}" class="btn-filled">Continue to Login</a>
+          </div>
+          {% else %}
+          <div id="successMessage" class="success-message">
+            <svg class="success-icon mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <h3 class="text-sm font-semibold mb-2">Registration Successful!</h3>
+            <p class="text-8px text-gray-400 mb-4">Welcome to Safety App.</p>
+            <a href="{% url 'login' %}" class="btn-filled">Continue to Login</a>
+          </div>
+          {% endif %}
           
           <!-- Signup Form -->
-          <div id="signupForm">
+          {% if not success %}
+          <form id="signupForm" method="POST" action="{% url 'signup' %}">
+            {% csrf_token %}
             <div class="form-group">
               <label for="fullName" class="form-label">Full Name</label>
-              <input type="text" id="fullName" class="input w-full" placeholder="Enter your full name" required>
+              <input type="text" id="fullName" name="full_name" class="input w-full" placeholder="Enter your full name" required>
             </div>
             <div class="form-group">
               <label for="email" class="form-label">Email Address</label>
-              <input type="email" id="email" class="input w-full" placeholder="Enter your email" required>
+              <input type="email" id="email" name="email" class="input w-full" placeholder="Enter your email" required>
             </div>
             <div class="form-group">
               <label for="password" class="form-label">Password</label>
               <div class="password-container">
-                <input type="password" id="password" class="input w-full" placeholder="Enter your password" required>
+                <input type="password" id="password" name="password" class="input w-full" placeholder="Enter your password" required>
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -359,7 +389,7 @@
             <div class="form-group">
               <label for="confirmPassword" class="form-label">Confirm Password</label>
               <div class="password-container">
-                <input type="password" id="confirmPassword" class="input w-full" placeholder="Confirm your password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" class="input w-full" placeholder="Confirm your password" required>
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -368,18 +398,9 @@
                 </button>
               </div>
             </div>
-            <button class="btn btn-success w-full" onclick="handleSignup()">Sign Up</button>
-          </div>
-          
-          <!-- Success Message -->
-          <div id="successMessage" class="success-message">
-            <svg class="success-icon mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <h3 class="text-sm font-semibold mb-2">Registration Successful!</h3>
-            <p class="text-8px text-gray-400 mb-4">Welcome to Safety App.</p>
-            <button class="btn-filled" onclick="goToLogin()">Continue to Login</button>
-          </div>
+            <button type="submit" class="btn btn-success w-full">Sign Up</button>
+          </form>
+          {% endif %}
           
           <div class="login-link">
             Already have an account? <a href="{% url 'login' %}">Log in</a>
@@ -387,9 +408,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Bottom Navigation -->
-   
   </div>
 
   <script>
@@ -428,54 +446,6 @@
           </svg>
         `;
       }
-    }
-
-    // Form submission
-    function handleSignup() {
-      const fullName = document.getElementById('fullName').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const errorMessage = document.getElementById('errorMessage');
-      const successMessage = document.getElementById('successMessage');
-      const signupForm = document.getElementById('signupForm');
-
-      // Hide any previous messages
-      errorMessage.style.display = 'none';
-      successMessage.classList.remove('active');
-
-      // Validation
-      let isValid = true;
-      let errorText = '';
-
-      if (!fullName || fullName.trim().length < 2) {
-        errorText = 'Please enter a valid full name (at least 2 characters).';
-        isValid = false;
-      } else if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errorText = 'Please enter a valid email.';
-        isValid = false;
-      } else if (!password || password.length < 6) {
-        errorText = 'Password must be at least 6 characters.';
-        isValid = false;
-      } else if (password !== confirmPassword) {
-        errorText = 'Passwords do not match.';
-        isValid = false;
-      }
-
-      if (!isValid) {
-        errorMessage.textContent = errorText;
-        errorMessage.style.display = 'block';
-        return;
-      }
-
-      // Simulate successful signup
-      signupForm.style.display = 'none';
-      successMessage.classList.add('active');
-    }
-
-    // Navigate to login
-    function goToLogin() {
-      window.location.href = 'login.html';
     }
   </script>
 </body>

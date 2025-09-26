@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from . import peza_api
 urlpatterns = [
     
     path('home/', views.home, name='home'),
@@ -19,5 +19,6 @@ urlpatterns = [
     path('emergency_contact/', views.emergency_contact, name='emergency_contact'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup, name='signup'),
+    path('api/peza/', peza_api.peza_api, name='peza_api'),
     
 ]

@@ -27,6 +27,7 @@
     }
   </script>
   <style>
+    /* Existing styles remain unchanged */
     :root {
       --primary: #000000;
       --secondary: #FFFFFF;
@@ -48,7 +49,7 @@
       height: 100vh;
       overflow: hidden;
       margin: 0;
-      font-size: 10px; /* Minimized base font size */
+      font-size: 10px;
       transition: background 0.3s ease;
     }
     body.light {
@@ -73,7 +74,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 12px;
-      padding-bottom: 70px; /* Adjusted for bottom nav */
+      padding-bottom: 70px;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -93,7 +94,7 @@
       border-radius: 8px;
       padding: 8px 12px;
       font-weight: 600;
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -116,7 +117,7 @@
       border-radius: 8px;
       padding: 8px 10px;
       color: var(--text-primary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       width: 100%;
       transition: border-color 0.3s ease;
     }
@@ -164,7 +165,7 @@
       pointer-events: none;
     }
     .logo {
-      font-size: 32px; /* Reduced for compactness */
+      font-size: 32px;
       font-weight: 800;
       color: var(--secondary);
       margin-bottom: 6px;
@@ -184,18 +185,18 @@
     }
     .login-card {
       width: 100%;
-      max-width: 360px; /* Slightly smaller for compactness */
-      padding: 16px; /* Reduced padding */
+      max-width: 360px;
+      padding: 16px;
     }
     .login-title {
-      font-size: 16px; /* Minimized font size */
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-primary);
       text-align: center;
       margin-bottom: 4px;
     }
     .login-subtitle {
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
       text-align: center;
       margin-bottom: 12px;
@@ -205,7 +206,7 @@
     }
     .form-label {
       display: block;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       font-weight: 600;
       color: var(--text-secondary);
       margin-bottom: 4px;
@@ -224,7 +225,7 @@
       cursor: pointer;
     }
     .toggle-password svg {
-      width: 14px; /* Reduced for compactness */
+      width: 14px;
       height: 14px;
     }
     .remember-forgot {
@@ -243,11 +244,11 @@
       height: 14px;
     }
     .remember-me label {
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
     }
     .forgot-password {
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--secondary);
       text-decoration: none;
     }
@@ -263,7 +264,7 @@
     }
     .divider-text {
       padding: 0 8px;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
     }
     .social-login {
@@ -286,13 +287,13 @@
       background: rgba(255, 255, 255, 0.05);
     }
     .social-btn svg {
-      width: 16px; /* Reduced for compactness */
+      width: 16px;
       height: 16px;
     }
     .signup-link {
       text-align: center;
       margin-top: 12px;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
     }
     .signup-link a {
@@ -307,7 +308,7 @@
       padding: 8px;
       margin-bottom: 12px;
       color: #ff6b6b;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       display: none;
     }
     .success-message {
@@ -317,7 +318,7 @@
       padding: 8px;
       margin-bottom: 12px;
       color: #51cf66;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       display: none;
     }
     .bottom-nav {
@@ -342,7 +343,7 @@
       border-radius: 8px;
       transition: all 0.3s ease;
       min-width: 45px;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
     }
     .nav-item.active {
       color: var(--secondary);
@@ -396,25 +397,33 @@
           <p class="login-subtitle">Sign in to your Safety App account</p>
           
           <!-- Error Message -->
+          {% if error %}
+          <div id="errorMessage" class="error-message" style="display: block;">
+            {{ error }}
+          </div>
+          {% else %}
           <div id="errorMessage" class="error-message">
             Invalid email or password. Please try again.
           </div>
+          {% endif %}
           
-          <!-- Success Message -->
+          <!-- Success Message (optional, not used by backend) -->
           <div id="successMessage" class="success-message">
             Login successful! Redirecting...
           </div>
           
-          <div id="loginForm">
+          <!-- Login Form -->
+          <form id="loginForm" method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
             <div class="form-group">
               <label for="email" class="form-label">Email Address</label>
-              <input type="email" id="email" class="input w-full" placeholder="Enter your email" value="bernardhamiedev@pezamw.com" required>
+              <input type="email" id="email" name="email" class="input w-full" placeholder="Enter your email" required>
             </div>
             
             <div class="form-group">
               <label for="password" class="form-label">Password</label>
               <div class="password-container">
-                <input type="password" id="password" class="input w-full" placeholder="Enter your password" required>
+                <input type="password" id="password" name="password" class="input w-full" placeholder="Enter your password" required>
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -426,19 +435,19 @@
             
             <div class="remember-forgot">
               <div class="remember-me">
-                <input type="checkbox" id="rememberMe">
+                <input type="checkbox" id="rememberMe" name="remember_me">
                 <label for="rememberMe">Remember me</label>
               </div>
-              <a href="#" class="forgot-password">Forgot Password?</a>
+              <a href="" class="forgot-password">Forgot Password?</a>
             </div>
             
-            <button type="submit" class="btn btn-filled w-full mb-4" onclick="handleLogin()">
+            <button type="submit" class="btn btn-filled w-full mb-4">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
               Sign In
             </button>
-          </div>
+          </form>
           
           <div class="divider">
             <div class="divider-line"></div>
@@ -475,9 +484,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Bottom Navigation -->
-    
   </div>
 
   <script>
@@ -523,48 +529,13 @@
       }
     }
 
-    // Social login
+    // Social login (unchanged, for future OAuth integration)
     function socialLogin(provider) {
       alert(`Logging in with ${provider}... (Simulated for demo)`);
       // In a real app, integrate with provider's OAuth flow
     }
 
-    // Form submission
-    function handleLogin() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const errorMessage = document.getElementById('errorMessage');
-      const successMessage = document.getElementById('successMessage');
-      const loginForm = document.getElementById('loginForm');
-      
-      // Hide any previous messages
-      errorMessage.style.display = 'none';
-      successMessage.style.display = 'none';
-      
-      // Simple validation
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errorMessage.textContent = 'Please enter a valid email.';
-        errorMessage.style.display = 'block';
-        return;
-      }
-      
-      if (!password || password.length < 6) {
-        errorMessage.textContent = 'Password must be at least 6 characters.';
-        errorMessage.style.display = 'block';
-        return;
-      }
-      
-      // Simulate successful login
-      successMessage.style.display = 'block';
-      loginForm.style.display = 'none';
-      
-      // Redirect to main app after a delay
-      setTimeout(() => {
-        window.location.href = '{% url 'home' %}';
-      }, 1500);
-    }
-
-    // Check if user has saved credentials
+    // Handle "Remember Me" functionality
     document.addEventListener('DOMContentLoaded', function() {
       const savedEmail = localStorage.getItem('safetyAppEmail');
       const rememberMe = localStorage.getItem('safetyAppRememberMe');
@@ -574,25 +545,19 @@
         document.getElementById('rememberMe').checked = true;
       }
 
-      // Attach form submission handler
-      document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        handleLogin();
+      // Save credentials if "Remember Me" is checked
+      document.getElementById('loginForm').addEventListener('submit', function() {
+        const rememberMe = document.getElementById('rememberMe').checked;
+        const email = document.getElementById('email').value;
+        
+        if (rememberMe) {
+          localStorage.setItem('safetyAppEmail', email);
+          localStorage.setItem('safetyAppRememberMe', 'true');
+        } else {
+          localStorage.removeItem('safetyAppEmail');
+          localStorage.removeItem('safetyAppRememberMe');
+        }
       });
-    });
-
-    // Save credentials if remember me is checked
-    document.getElementById('loginForm').addEventListener('submit', function() {
-      const rememberMe = document.getElementById('rememberMe').checked;
-      const email = document.getElementById('email').value;
-      
-      if (rememberMe) {
-        localStorage.setItem('safetyAppEmail', email);
-        localStorage.setItem('safetyAppRememberMe', 'true');
-      } else {
-        localStorage.removeItem('safetyAppEmail');
-        localStorage.removeItem('safetyAppRememberMe');
-      }
     });
   </script>
 </body>
