@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import peza_api
+from django.views.generic import TemplateView
 urlpatterns = [
     
     path('home/', views.home, name='home'),
@@ -20,5 +21,8 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup, name='signup'),
     path('api/peza/', peza_api.peza_api, name='peza_api'),
-    
+
+    path('map/', TemplateView.as_view(template_name='maps.html'), name='map'),
+    # Ensure 'home' is defined, e.g.:
+   
 ]

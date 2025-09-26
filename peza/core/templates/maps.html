@@ -4,11 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Map - Safety App</title>
+  <title>Map - Peza Safety App</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Maria Font -->
   <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -23,6 +27,9 @@
             'text-primary': '#FFFFFF',
             'text-secondary': '#CCCCCC',
             'border-light': '#333333',
+            'alert-high': '#FF4444',
+            'alert-medium': '#FFAA00',
+            'alert-low': '#44B4FF'
           }
         }
       }
@@ -38,6 +45,9 @@
       --text-primary: #FFFFFF;
       --text-secondary: #CCCCCC;
       --border-light: #333333;
+      --alert-high: #FF4444;
+      --alert-medium: #FFAA00;
+      --alert-low: #44B4FF;
       --radius: 10px;
       --shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
     }
@@ -48,7 +58,7 @@
       font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--surface);
       margin: 0;
-      font-size: 10px; /* Minimized base font size */
+      font-size: 10px;
       overflow: hidden;
       height: 100vh;
       transition: background 0.3s ease;
@@ -71,16 +81,44 @@
       background: transparent;
       overflow: hidden;
     }
-    .content {
+    .map-container {
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 12px;
-      padding-bottom: 70px; /* Adjusted for bottom nav */
+      padding: 0;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
-    .content::-webkit-scrollbar { display: none; }
+    .map-container::-webkit-scrollbar {
+      display: none;
+    }
+    #map {
+      height: calc(100vh - 108px);
+      width: 100%;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .map-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surface-light);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow);
+    }
+    .map-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .map-buttons {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface-light);
+      border-bottom: 1px solid var(--border-light);
+    }
     .btn {
       background: transparent;
       color: var(--text-primary);
@@ -88,7 +126,7 @@
       border-radius: 8px;
       padding: 8px 12px;
       font-weight: 600;
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -103,6 +141,12 @@
       background: var(--secondary);
       color: var(--primary);
       border: 1px solid var(--secondary);
+    }
+    .error-message {
+      font-size: 10px;
+      color: var(--alert-high);
+      text-align: center;
+      padding: 16px;
     }
     .theme-toggle {
       position: fixed;
@@ -124,403 +168,238 @@
       width: 16px;
       height: 16px;
     }
-    .bottom-nav {
+    .popup {
       position: fixed;
-      bottom: 0;
+      top: 0;
       left: 0;
       right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border-light);
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
       display: flex;
-      justify-content: space-around;
-      padding: 6px 0;
-      z-index: 100;
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: 4px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      min-width: 45px;
-      font-size: 8px; /* Minimized font size */
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
-    .nav-item.active {
-      color: var(--secondary);
-      background: rgba(255, 255, 255, 0.1);
+    .popup.active {
+      visibility: visible;
+      opacity: 1;
     }
-    #map {
-      height: 50vh; /* Reduced to accommodate places list */
+    .popup-content {
+      background: var(--surface-light);
       border-radius: var(--radius);
       border: 1px solid var(--border-light);
-      margin-bottom: 12px;
       box-shadow: var(--shadow);
+      width: 90%;
+      max-width: 320px;
+      padding: 16px;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
-    .leaflet-popup-content {
-      font-size: 8px; /* Minimized font size */
-      color: var(--text-primary);
+    .popup-content::-webkit-scrollbar {
+      display: none;
     }
-    .leaflet-popup-content-wrapper {
-      background: var(--surface-light);
-      border-radius: 6px;
+    .popup-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
     }
-    .leaflet-popup-tip {
-      background: var(--surface-light);
+    .popup-close svg {
+      width: 16px;
+      height: 16px;
     }
     .popup-title {
-      font-weight: 600;
-      font-size: 9px; /* Minimized font size */
-      margin-bottom: 2px;
-    }
-    .popup-desc {
-      font-size: 7px; /* Minimized font size */
-      color: var(--text-secondary);
-    }
-    .section-title {
-      font-size: 12px; /* Minimized font size */
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-primary);
-      margin: 12px 0 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-bottom: 8px;
     }
-    .section-title svg {
-      width: 14px;
-      height: 14px;
-      color: var(--secondary);
+    .popup-text {
+      font-size: 10px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
     }
-    .place-item {
+    .leaflet-routing-container {
       background: var(--surface-light);
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
-      padding: 10px;
-      margin: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .place-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .place-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .place-content {
-      flex: 1;
-      min-width: 0;
-    }
-    .place-name {
-      font-weight: 600;
+      box-shadow: var(--shadow);
+      font-family: 'Maria', sans-serif;
+      font-size: 10px;
       color: var(--text-primary);
-      font-size: 10px; /* Minimized font size */
-      margin-bottom: 2px;
     }
-    .place-desc {
-      font-size: 8px; /* Minimized font size */
+    .leaflet-routing-container .leaflet-routing-alt {
       color: var(--text-secondary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-    .place-distance {
-      font-size: 7px; /* Minimized font size */
-      color: var(--accent);
-    }
-    .fab-container {
-      position: fixed;
-      bottom: 80px; /* Above bottom nav */
-      right: 12px;
-      z-index: 100;
-    }
-    .fab {
-      background: var(--secondary);
-      color: var(--primary);
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .fab:active {
-      transform: scale(0.95);
-    }
-    .fab-menu {
-      position: absolute;
-      bottom: 54px;
-      right: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-    }
-    .fab-menu.open {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-    .fab-menu-item {
-      background: var(--surface-light);
+    .leaflet-routing-container .leaflet-routing-geocoder {
+      background: var(--surface);
       border: 1px solid var(--border-light);
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
+      border-radius: 8px;
       color: var(--text-primary);
-      font-size: 8px; /* Minimized font size */
-      font-weight: 600;
-      transition: all 0.3s ease;
     }
-    .fab-menu-item:active {
-      transform: scale(0.95);
-    }
-    .fab-menu-item svg {
-      width: 14px;
-      height: 14px;
+    .leaflet-routing-container .leaflet-routing-geocoder input {
+      font-size: 10px;
     }
     @media (max-width: 480px) {
-      body { font-size: 8px; }
-      .btn { font-size: 8px; padding: 6px 10px; }
-      .theme-toggle { width: 28px; height: 28px; top: 10px; right: 10px; }
-      .theme-toggle svg { width: 14px; height: 14px; }
-      .nav-item { font-size: 7px; }
-      #map { height: 40vh; }
-      .leaflet-popup-content { font-size: 7px; }
-      .popup-title { font-size: 8px; }
-      .popup-desc { font-size: 6px; }
-      .section-title { font-size: 10px; }
-      .section-title svg { width: 12px; height: 12px; }
-      .place-item { padding: 8px; }
-      .place-name { font-size: 8px; }
-      .place-desc { font-size: 7px; }
-      .place-distance { font-size: 6px; }
-      .place-avatar { width: 28px; height: 28px; }
-      .fab { width: 40px; height: 40px; }
-      .fab-menu-item { width: 32px; height: 32px; font-size: 7px; }
-      .fab-menu-item svg { width: 12px; height: 12px; }
-      .header-title { font-size: 12px; }
-      .header-desc { font-size: 8px; }
+      body {
+        font-size: 8px;
+      }
+      #map {
+        height: calc(100vh - 88px);
+      }
+      .map-header {
+        padding: 8px 12px;
+      }
+      .map-title {
+        font-size: 10px;
+      }
+      .map-buttons {
+        padding: 6px 12px;
+        gap: 6px;
+      }
+      .btn {
+        font-size: 8px;
+        padding: 6px 10px;
+      }
+      .btn svg {
+        width: 12px;
+        height: 12px;
+      }
+      .error-message {
+        font-size: 8px;
+      }
+      .theme-toggle {
+        width: 28px;
+        height: 28px;
+        top: 10px;
+        right: 10px;
+      }
+      .theme-toggle svg {
+        width: 14px;
+        height: 14px;
+      }
+      .popup-content {
+        padding: 12px;
+        max-width: 280px;
+      }
+      .popup-title {
+        font-size: 10px;
+      }
+      .popup-text {
+        font-size: 8px;
+      }
+      .popup-close svg {
+        width: 14px;
+        height: 14px;
+      }
+      .leaflet-routing-container {
+        font-size: 8px;
+      }
+      .leaflet-routing-container .leaflet-routing-geocoder input {
+        font-size: 8px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="app-container">
-    <!-- Header -->
-    <div class="px-4 pt-4 pb-3">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center space-x-2">
-          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
-            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-          </a>
-          <div>
-            <h2 class="header-title text-sm font-semibold text-white">Map</h2>
-            <p class="header-desc text-8px text-gray-400">Nearby places within 2km radius</p>
-          </div>
-        </div>
-        <button class="p-1.5 rounded-full bg-white/10" onclick="centerMap()">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
-      </div>
-    </div>
-
     <!-- Theme Toggle -->
     <div class="theme-toggle" onclick="toggleTheme()">
-      <svg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg id="theme-icon" class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
       </svg>
     </div>
 
-    <!-- FAB -->
-    <div class="fab-container">
-      <div class="fab" onclick="toggleFabMenu()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    <!-- Map Header -->
+    <div class="map-header">
+      <button class="btn btn-filled" onclick="window.location.href='{% url 'home' %}'">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-      </div>
-      <div class="fab-menu" id="fab-menu">
-        <div class="fab-menu-item" onclick="shareLocation()">
+        Back
+      </button>
+      <h1 class="map-title" id="map-title">Loading...</h1>
+    </div>
+
+    <!-- Map Buttons -->
+    <div class="map-buttons">
+      <button class="btn btn-filled" onclick="showUserLocation()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Show Your Location
+      </button>
+      <button class="btn btn-filled" onclick="getDirections()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        </svg>
+        Directions
+      </button>
+      <button class="btn btn-filled" onclick="showOtherData()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Other Data
+      </button>
+    </div>
+
+    <!-- Map Container -->
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <!-- Other Data Popup -->
+    <div id="other-data-popup" class="popup">
+      <div class="popup-content">
+        <button class="popup-close" onclick="closeOtherDataPopup()">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.375 12.651 10.223 12.5 12 12.5c1.777 0 2.625.151 3.316.842m0 0l3.842 3.842M15.158 15.684l3.842-3.842m-8.684 0C9.375 12.651 8.527 12.5 6.75 12.5c-1.777 0-2.625.151-3.316.842m0 0l-3.842 3.842m3.842-3.842l-3.842-3.842" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
+        </button>
+        <h3 id="popup-title" class="popup-title"></h3>
+        <div class="popup-section">
+          <div class="popup-label">Address</div>
+          <div id="popup-address" class="popup-text">Loading...</div>
         </div>
-        <div class="fab-menu-item" onclick="addPlace()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
-        <div class="fab-menu-item" onclick="reportIssue()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+        <div class="popup-section">
+          <div class="popup-label">Distance</div>
+          <div id="popup-distance" class="popup-text">Calculating...</div>
         </div>
       </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="content">
-      <div class="px-4">
-        <div id="map"></div>
-        <!-- Nearby Places List -->
-        <div class="mb-4">
-          <h3 class="section-title">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Nearby Places (2km Radius)
-          </h3>
-          <div id="places-list">
-            <!-- Restaurant -->
-            <div class="place-item" data-lat="-13.9600" data-lng="33.7730">
-              <div class="place-avatar">
-                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Cozy Bistro">
-              </div>
-              <div class="place-content">
-                <div class="place-name">Cozy Bistro</div>
-                <div class="place-desc">Italian cuisine • Rated 4.8</div>
-                <div class="place-distance">1.2 km away</div>
-              </div>
-            </div>
-            <!-- Bar -->
-            <div class="place-item" data-lat="-13.9615" data-lng="33.7750">
-              <div class="place-avatar">
-                <img src="https://images.unsplash.com/photo-1571934811354-17e40d5a7f7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Night Owl Bar">
-              </div>
-              <div class="place-content">
-                <div class="place-name">Night Owl Bar</div>
-                <div class="place-desc">Craft beers • Live music</div>
-                <div class="place-distance">0.8 km away</div>
-              </div>
-            </div>
-            <!-- Motel -->
-            <div class="place-item" data-lat="-13.9630" data-lng="33.7720">
-              <div class="place-avatar">
-                <img src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Rest Haven Motel">
-              </div>
-              <div class="place-content">
-                <div class="place-name">Rest Haven Motel</div>
-                <div class="place-desc">Clean rooms • Free WiFi</div>
-                <div class="place-distance">1.5 km away</div>
-              </div>
-            </div>
-            <!-- Trending Spot -->
-            <div class="place-item" data-lat="-13.9620" data-lng="33.7760">
-              <div class="place-avatar">
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="City Park Cafe">
-              </div>
-              <div class="place-content">
-                <div class="place-name">City Park Cafe</div>
-                <div class="place-desc">Trending • Coffee & pastries</div>
-                <div class="place-distance">0.5 km away</div>
-              </div>
-            </div>
-            <!-- Restaurant -->
-            <div class="place-item" data-lat="-13.9645" data-lng="33.7710">
-              <div class="place-avatar">
-                <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Spice Route">
-              </div>
-              <div class="place-content">
-                <div class="place-name">Spice Route</div>
-                <div class="place-desc">Indian fusion • Rated 4.6</div>
-                <div class="place-distance">1.8 km away</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
+        <!-- Bottom Navigation -->
     {% include 'bottom_nav.html' %}
   </div>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Leaflet Routing Machine JS -->
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
   <script>
-    // Initialize Leaflet map
-    const map = L.map('map').setView([-13.9626, 33.7741], 14); // Centered on Lilongwe, Malawi
-    L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-      attribution: '&copy; <a href="https://www.google.com/maps">Google Maps</a>',
-      maxZoom: 18,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    }).addTo(map);
-
-    // Places data
-    const places = [
-      {
-        name: 'Cozy Bistro',
-        desc: 'Italian cuisine • Rated 4.8',
-        lat: -13.9600,
-        lng: 33.7730,
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-      },
-      {
-        name: 'Night Owl Bar',
-        desc: 'Craft beers • Live music',
-        lat: -13.9615,
-        lng: 33.7750,
-        image: 'https://images.unsplash.com/photo-1571934811354-17e40d5a7f7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-      },
-      {
-        name: 'Rest Haven Motel',
-        desc: 'Clean rooms • Free WiFi',
-        lat: -13.9630,
-        lng: 33.7720,
-        image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-      },
-      {
-        name: 'City Park Cafe',
-        desc: 'Trending • Coffee & pastries',
-        lat: -13.9620,
-        lng: 33.7760,
-        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
-      },
-      {
-        name: 'Spice Route',
-        desc: 'Indian fusion • Rated 4.6',
-        lat: -13.9645,
-        lng: 33.7710,
-        image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'
+    // Apply saved theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('safetyAppTheme');
+      const body = document.body;
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (savedTheme === 'light') {
+        body.classList.add('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+      } else {
+        body.classList.remove('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
       }
-    ];
-
-    // Add markers to map
-    places.forEach(place => {
-      const marker = L.marker([place.lat, place.lng]).addTo(map);
-      marker.bindPopup(`
-        <div class="popup-title">${place.name}</div>
-        <div class="popup-desc">${place.desc}</div>
-        <img src="${place.image}" style="width: 80px; height: 50px; border-radius: 4px; margin-top: 4px;">
-      `);
     });
-
-    // Center map function
-    function centerMap() {
-      map.setView([-13.9626, 33.7741], 14);
-    }
 
     // Theme toggle
     function toggleTheme() {
@@ -530,66 +409,166 @@
       if (body.classList.contains('light')) {
         body.classList.remove('light');
         themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+        localStorage.setItem('safetyAppTheme', 'dark');
       } else {
         body.classList.add('light');
         themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+        localStorage.setItem('safetyAppTheme', 'light');
       }
-      // Update map tiles for theme
-      const tileUrl = body.classList.contains('light') ?
-        'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' :
-        'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}';
-      map.eachLayer(layer => {
-        if (layer instanceof L.TileLayer) {
-          map.removeLayer(layer);
-        }
-      });
-      L.tileLayer(tileUrl, {
-        attribution: '&copy; <a href="https://www.google.com/maps">Google Maps</a>',
-        maxZoom: 18,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      }).addTo(map);
     }
 
-    // FAB functionality
-    function toggleFabMenu() {
-      const menu = document.getElementById('fab-menu');
-      menu.classList.toggle('open');
+    // Parse query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const lat = parseFloat(urlParams.get('lat'));
+    const lon = parseFloat(urlParams.get('lon'));
+    const name = decodeURIComponent(urlParams.get('name') || 'Location');
+
+    // Initialize map
+    const map = L.map('map');
+    const defaultCoords = [-13.9626, 33.7741]; // Default: Lilongwe
+    const center = (lat && lon && !isNaN(lat) && !isNaN(lon)) ? [lat, lon] : defaultCoords;
+
+    // Set map view
+    map.setView(center, 15);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Add marker for selected location
+    let locationMarker = null;
+    if (lat && lon && !isNaN(lat) && !isNaN(lon)) {
+      locationMarker = L.marker([lat, lon]).addTo(map)
+        .bindPopup(`<b>${name}</b>`).openPopup();
+      document.getElementById('map-title').textContent = name;
+      document.getElementById('popup-title').textContent = name;
+    } else {
+      document.getElementById('map-title').textContent = 'Invalid Location';
+      document.getElementById('map').innerHTML = '<div class="error-message">Invalid or missing coordinates. Please select a valid location.</div>';
     }
 
-    function shareLocation() {
-      alert('Sharing location...');
-      // In real app, implement location sharing
-    }
+    // Initialize routing control
+    let routingControl = null;
 
-    function addPlace() {
-      alert('Opening add place form...');
-      // In real app, open form to add new place
-    }
-
-    function reportIssue() {
-      alert('Reporting issue...');
-      // In real app, open issue reporting form
-    }
-
-    // Map interaction with place items
-    document.querySelectorAll('.place-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const lat = parseFloat(item.getAttribute('data-lat'));
-        const lng = parseFloat(item.getAttribute('data-lng'));
-        map.setView([lat, lng], 16);
-        places.forEach(place => {
-          if (place.lat === lat && place.lng === lng) {
-            L.marker([place.lat, place.lng]).addTo(map)
-              .bindPopup(`
-                <div class="popup-title">${place.name}</div>
-                <div class="popup-desc">${place.desc}</div>
-                <img src="${place.image}" style="width: 80px; height: 50px; border-radius: 4px; margin-top: 4px;">
-              `)
-              .openPopup();
-          }
+    // Show user location
+    let userMarker = null;
+    async function showUserLocation() {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
         });
-      });
-    });
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        if (userMarker) {
+          map.removeLayer(userMarker);
+        }
+        userMarker = L.marker([userLat, userLon], {
+          icon: L.divIcon({
+            className: 'user-location',
+            html: '<div style="background: #44B4FF; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #FFFFFF;"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          })
+        }).addTo(map).bindPopup('Your Location').openPopup();
+
+        map.panTo([userLat, userLon]);
+      } catch (error) {
+        alert('Unable to get your location. Please check location permissions.');
+      }
+    }
+
+    // Get directions
+    async function getDirections() {
+      if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
+        alert('Invalid destination coordinates.');
+        return;
+      }
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+        });
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        if (routingControl) {
+          map.removeControl(routingControl);
+        }
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(userLat, userLon),
+            L.latLng(lat, lon)
+          ],
+          router: L.Routing.osrmv1({
+            serviceUrl: 'http://router.project-osrm.org/route/v1'
+          }),
+          lineOptions: {
+            styles: [{ color: '#44B4FF', weight: 5 }]
+          },
+          addWaypoints: false,
+          fitSelectedRoutes: true,
+          showAlternatives: false,
+          containerClassName: 'leaflet-routing-container'
+        }).addTo(map);
+      } catch (error) {
+        alert('Unable to get your location for routing. Please check location permissions.');
+      }
+    }
+
+    // Show other data
+    async function showOtherData() {
+      if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
+        alert('Invalid location data.');
+        return;
+      }
+      const popup = document.getElementById('other-data-popup');
+      const addressElement = document.getElementById('popup-address');
+      const distanceElement = document.getElementById('popup-distance');
+
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+        });
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        const response = await fetch(`/api/peza/?lat=${userLat}&lon=${userLon}&category=ambulance`);
+        const data = await response.json();
+
+        if (data.error || !data.locations) {
+          addressElement.textContent = 'Unknown Address';
+          distanceElement.textContent = 'Unable to calculate distance';
+        } else {
+          const location = data.locations.find(loc => 
+            Math.abs(parseFloat(loc.lat) - lat) < 0.0001 && Math.abs(parseFloat(loc.lon) - lon) < 0.0001
+          );
+          addressElement.textContent = location ? location.address : 'Unknown Address';
+          distanceElement.textContent = location ? location.distance : calculateDistance(userLat, userLon, lat, lon);
+        }
+      } catch (error) {
+        addressElement.textContent = 'Unknown Address';
+        distanceElement.textContent = calculateDistance(defaultCoords[0], defaultCoords[1], lat, lon);
+      }
+
+      popup.classList.add('active');
+    }
+
+    function closeOtherDataPopup() {
+      document.getElementById('other-data-popup').classList.remove('active');
+    }
+
+    // Calculate distance (Haversine formula)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth's radius in km
+      const dlat = (lat2 - lat1) * Math.PI / 180;
+      const dlon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dlat/2)**2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dlon/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c;
+      return `${distance.toFixed(1)} km`;
+    }
   </script>
 </body>
 </html>
