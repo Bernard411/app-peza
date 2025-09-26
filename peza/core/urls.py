@@ -2,6 +2,16 @@ from django.urls import path
 from . import views
 from . import peza_api
 from django.views.generic import TemplateView
+from django.urls import path
+from .views import EmergencyContactListCreateView
+from django.urls import path
+from .views import InboxView, DMView, NotificationDetailView
+from django.urls import path
+from django.urls import path
+from .views import InboxView, DMView, NotificationDetailView, ComposeView, MessageListCreateView, TypingStatusView
+
+from .views import InboxView, DMView, NotificationDetailView, ComposeView
+
 urlpatterns = [
     
     path('home/', views.home, name='home'),
@@ -13,7 +23,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('settings/', views.settings, name='settings'),
     path('services/', views.services, name='services'),
-    path('inbox/', views.inbox, name='inbox'),
+    # path('inbox/', views.inbox, name='inbox'),
     path('near_by_places/', views.near_by_places, name='near_by_places'),
     path('pay/', views.pay, name='pay'),
     path('maps/', views.maps, name='maps'),
@@ -23,6 +33,16 @@ urlpatterns = [
     path('api/peza/', peza_api.peza_api, name='peza_api'),
 
     path('map/', TemplateView.as_view(template_name='maps.html'), name='map'),
-    # Ensure 'home' is defined, e.g.:
-   
+
+    path('api/emergency-contacts/', EmergencyContactListCreateView.as_view(), name='emergency_contacts_list_create'),
+
+
+
+
+    path('inbox/', InboxView.as_view(), name='inbox'),
+    path('dm/<int:user_id>/', DMView.as_view(), name='dm'),
+    path('notification/<int:pk>/', NotificationDetailView.as_view(), name='notification_detail'),
+    path('compose/', ComposeView.as_view(), name='compose'),
+    path('api/messages/<int:user_id>/', MessageListCreateView.as_view(), name='message_list_create'),
+    path('api/typing/<int:user_id>/', TypingStatusView.as_view(), name='typing_status'),
 ]

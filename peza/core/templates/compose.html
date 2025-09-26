@@ -1,13 +1,11 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en" class="dark">
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Inbox - Safety App</title>
+  <title>Compose Message - Safety App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.cdnfonts.com/css/maria-2" rel="stylesheet">
   <script>
@@ -30,7 +28,7 @@
     }
   </script>
   <style>
-    :root {
+     :root {
       --primary: #000000;
       --secondary: #FFFFFF;
       --accent: #AAAAAA;
@@ -341,6 +339,149 @@
       .header-title { font-size: 12px; }
       .header-desc { font-size: 8px; }
     }
+    /* Copy styles from inbox.html for consistency */
+    :root {
+      --primary: #000000;
+      --secondary: #FFFFFF;
+      --accent: #AAAAAA;
+      --surface: #000000;
+      --surface-light: #1A1A1A;
+      --text-primary: #FFFFFF;
+      --text-secondary: #CCCCCC;
+      --border-light: #333333;
+      --radius: 10px;
+      --shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--surface);
+      margin: 0;
+      font-size: 10px;
+      overflow: hidden;
+      height: 100vh;
+      transition: background 0.3s ease;
+    }
+    body.light {
+      --primary: #FFFFFF;
+      --secondary: #000000;
+      --accent: #666666;
+      --surface: #F5F5F7;
+      --surface-light: #FFFFFF;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-light: #E5E5E7;
+      background: var(--surface);
+    }
+    #app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px;
+      padding-bottom: 70px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+    .user-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.3s ease;
+    }
+    .user-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .user-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 10px;
+    }
+    .search-container {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      width: 100%;
+      padding-left: 28px;
+      font-size: 10px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      width: 14px;
+      height: 14px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 24px 12px;
+      color: var(--text-secondary);
+      font-size: 10px;
+    }
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+    }
+    @media (max-width: 480px) {
+      body { font-size: 8px; }
+      .user-item { padding: 8px; }
+      .user-name { font-size: 8px; }
+      .search-input { font-size: 8px; padding-left: 24px; }
+      .search-icon { width: 12px; height: 12px; left: 6px; }
+      .user-avatar { width: 28px; height: 28px; }
+      .empty-state { font-size: 8px; }
+      .empty-state svg { width: 32px; height: 32px; }
+      .header-title { font-size: 12px; }
+      .header-desc { font-size: 8px; }
+    }
   </style>
 </head>
 <body>
@@ -349,100 +490,54 @@
     <div class="px-4 pt-4 pb-3">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
-          <a href="{% url 'home' %}" class="p-1.5 rounded-full bg-white/10">
+          <a href="{% url 'inbox' %}" class="p-1.5 rounded-full bg-white/10">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </a>
           <div>
-            <h2 class="header-title text-sm font-semibold text-white">Inbox</h2>
-            <p class="header-desc text-8px text-gray-400">Messages and notifications</p>
+            <h2 class="header-title text-sm font-semibold text-white">New Message</h2>
+            <p class="header-desc text-8px text-gray-400">Select a user to message</p>
           </div>
         </div>
-        <button class="p-1.5 rounded-full bg-white/10" onclick="composeMessage()">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-        </button>
       </div>
-      
+
       <!-- Search Bar -->
       <div class="search-container">
         <svg class="search-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-        <input type="text" placeholder="Search messages..." class="input search-input" id="messageSearch">
+        <input type="text" placeholder="Search users..." class="input search-input" id="userSearch">
       </div>
     </div>
 
     <!-- Theme Toggle -->
-    <!-- ... (keep as is) -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <svg id="theme-icon" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </div>
 
     <!-- Main Content -->
     <div class="content">
-      <!-- Inbox Tabs -->
       <div class="px-4">
-        <div class="inbox-tabs">
-          <div class="inbox-tab active" onclick="switchTab('all')">All</div>
-          <div class="inbox-tab" onclick="switchTab('unread')">Unread</div>
-          <div class="inbox-tab" onclick="switchTab('neighbors')">Neighbors</div>
-          <div class="inbox-tab" onclick="switchTab('alerts')">Alerts</div>
-        </div>
-      </div>
-
-      <!-- Messages List -->
-      <div class="px-4">
-        <div id="messages-list">
-          {% for item in inbox_items %}
-            {% if item.item_type == 'conversation' %}
-              <div class="message-item {% if item.unread_count > 0 %}unread{% endif %}" onclick="window.location.href='{% url "dm" item.id %}'">
-                <div class="message-avatar">
-                  <img src="{{ item.correspondent.profile.avatar.url|default:'https://via.placeholder.com/32' }}" alt="{{ item.correspondent.username }}">
-                </div>
-                <div class="message-content">
-                  <div class="message-header">
-                    <div class="message-sender">{{ item.correspondent.username }}</div>
-                    <div class="message-time">{{ item.timestamp|timesince }}</div>
-                  </div>
-                  <div class="message-preview">{{ item.content|truncatechars:50 }}</div>
-                </div>
-                {% if item.unread_count > 0 %}
-                  <div class="message-badge">{{ item.unread_count }}</div>
-                {% endif %}
+        <div id="users-list">
+          {% for user in users %}
+            <a href="{% url 'dm' user.id %}" class="user-item">
+              <div class="user-avatar">
+                <img src="" alt="{{ user.username }}">
               </div>
-            {% elif item.item_type == 'notification' %}
-              <div class="message-item {% if not item.is_read %}unread{% endif %}" onclick="window.location.href='{% url "notification_detail" item.id %}'">
-                <div class="message-avatar">
-                  <div style="width:100%;height:100%;border-radius:50%;background:{% if item.type == 'alert' %}#FF4444{% elif item.type == 'service' %}#44B4FF{% elif item.type == 'welcome' %}#00AA55{% endif %};display:flex;align-items:center;justify-content:center;">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      {% if item.type == 'alert' %}
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      {% elif item.type == 'service' %}
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      {% elif item.type == 'welcome' %}
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      {% endif %}
-                    </svg>
-                  </div>
-                </div>
-                <div class="message-content">
-                  <div class="message-header">
-                    <div class="message-sender">{{ item.title }}</div>
-                    <div class="message-time">{{ item.timestamp|timesince }}</div>
-                  </div>
-                  <div class="message-preview">{{ item.content|truncatechars:50 }}</div>
-                </div>
-                {% if not item.is_read %}
-                  <div class="message-badge">1</div>
-                {% endif %}
-              </div>
-            {% endif %}
+              <div class="user-name">{{ user.username }}</div>
+            </a>
           {% endfor %}
         </div>
-
         <!-- Empty State -->
-        <div id="empty-inbox" class="empty-inbox" {% if inbox_items %}style="display: none;"{% endif %}>
-          <!-- ... (keep as is) -->
+        <div id="empty-users" class="empty-state" {% if users %}style="display: none;"{% endif %}>
+          <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <h3 class="text-sm font-semibold mb-1">No users found</h3>
+          <p class="text-8px text-gray-400">Try searching for a different user.</p>
         </div>
       </div>
     </div>
@@ -451,91 +546,40 @@
     {% include 'bottom_nav.html' %}
   </div>
 
-<script>
-  // Theme toggle
-  function toggleTheme() {
-    const body = document.body;
-    const themeIcon = document.getElementById('theme-icon');
-    
-    if (body.classList.contains('light')) {
-      body.classList.remove('light');
-      themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
-    } else {
-      body.classList.add('light');
-      themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
-    }
-  }
-
-  // Switch between inbox tabs
-  function switchTab(tab) {
-    document.querySelectorAll('.inbox-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    const messages = document.querySelectorAll('.message-item');
-    const emptyInbox = document.getElementById('empty-inbox');
-    let visibleCount = 0;
-    
-    messages.forEach(message => {
-      let shouldShow = false;
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const themeIcon = document.getElementById('theme-icon');
       
-      switch(tab) {
-        case 'all':
-          shouldShow = true;
-          break;
-        case 'unread':
-          shouldShow = message.classList.contains('unread');
-          break;
-        case 'neighbors':
-          shouldShow = message.querySelector('.message-avatar img') !== null;
-          break;
-        case 'alerts':
-          shouldShow = message.querySelector('.message-avatar img') === null;
-          break;
-      }
-      
-      message.style.display = shouldShow ? 'flex' : 'none';
-      if (shouldShow) visibleCount++;
-    });
-    
-    emptyInbox.style.display = visibleCount > 0 ? 'none' : 'block';
-  }
-
-  // Compose new message
-  function composeMessage() {
-    window.location.href = "{% url 'compose' %}";
-  }
-
-  // Search functionality
-  document.getElementById('messageSearch').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const messages = document.querySelectorAll('.message-item');
-    const emptyInbox = document.getElementById('empty-inbox');
-    let visibleCount = 0;
-    
-    messages.forEach(message => {
-      const sender = message.querySelector('.message-sender').textContent.toLowerCase();
-      const preview = message.querySelector('.message-preview').textContent.toLowerCase();
-      
-      if (sender.includes(searchTerm) || preview.includes(searchTerm)) {
-        message.style.display = 'flex';
-        visibleCount++;
+      if (body.classList.contains('light')) {
+        body.classList.remove('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
       } else {
-        message.style.display = 'none';
+        body.classList.add('light');
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
       }
-    });
-    
-    emptyInbox.style.display = visibleCount > 0 ? 'none' : 'block';
-  });
+    }
 
-  // Mark all as read
-  function markAllAsRead() {
-    document.querySelectorAll('.message-item.unread').forEach(message => {
-      message.classList.remove('unread');
-      const badge = message.querySelector('.message-badge');
-      if (badge) badge.remove();
+    // Search users
+    document.getElementById('userSearch').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const users = document.querySelectorAll('.user-item');
+      const emptyState = document.getElementById('empty-users');
+      let visibleCount = 0;
+      
+      users.forEach(user => {
+        const username = user.querySelector('.user-name').textContent.toLowerCase();
+        if (username.includes(searchTerm)) {
+          user.style.display = 'flex';
+          visibleCount++;
+        } else {
+          user.style.display = 'none';
+        }
+      });
+      
+      emptyState.style.display = visibleCount > 0 ? 'none' : 'block';
     });
-  }
-</script>
-
+  </script>
 </body>
 </html>

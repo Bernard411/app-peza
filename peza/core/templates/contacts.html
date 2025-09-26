@@ -48,7 +48,7 @@
       font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--surface);
       margin: 0;
-      font-size: 10px; /* Minimized base font size */
+      font-size: 10px;
       overflow: hidden;
       height: 100vh;
       transition: background 0.3s ease;
@@ -76,7 +76,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 12px;
-      padding-bottom: 70px; /* Adjusted for bottom nav */
+      padding-bottom: 70px;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -88,7 +88,7 @@
       border-radius: 8px;
       padding: 8px 12px;
       font-weight: 600;
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -103,7 +103,7 @@
       background: var(--emergency);
       color: white;
       border: 1px solid var(--emergency);
-      font-size: 8px; /* Smaller for compact call buttons */
+      font-size: 8px;
     }
     .btn-filled {
       background: var(--secondary);
@@ -152,14 +152,14 @@
       border-radius: 8px;
       transition: all 0.3s ease;
       min-width: 45px;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
     }
     .nav-item.active {
       color: var(--secondary);
       background: rgba(255, 255, 255, 0.1);
     }
     .section-title {
-      font-size: 12px; /* Minimized font size */
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-primary);
       margin: 12px 0 8px;
@@ -190,11 +190,11 @@
     .contact-name {
       font-weight: 600;
       color: var(--text-primary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       margin-bottom: 2px;
     }
     .contact-number {
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
       white-space: nowrap;
       overflow: hidden;
@@ -204,7 +204,7 @@
       text-align: center;
       padding: 24px 12px;
       color: var(--text-secondary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
     }
     .empty-state svg {
       width: 40px;
@@ -216,7 +216,7 @@
       text-align: center;
       padding: 12px;
       color: var(--emergency);
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       display: none;
     }
     @media (max-width: 480px) {
@@ -245,7 +245,7 @@
     <div class="px-4 pt-4 pb-3">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
-          <a href="index.html" class="p-1.5 rounded-full bg-white/10">
+          <a href="{% url 'home' %}" class="p-1.5 rounded-full bg-white/10">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -318,21 +318,20 @@
       }
     }
 
-    // Contact selection
-    async function selectContacts() {
-      if (!('contacts' in navigator && 'select' in navigator.contacts)) {
-        document.getElementById('error-message').style.display = 'block';
-        return;
-      }
-
+    // Fetch contacts from backend
+    async function fetchContacts() {
       try {
-        const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+        const response = await fetch('/api/emergency-contacts/', {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'), // Assumes JWT or similar token-based auth
+            'Content-Type': 'application/json'
+          }
+        });
+        const contacts = await response.json();
         const contactsList = document.getElementById('contacts-list');
         const emptyState = document.getElementById('empty-contacts');
 
-        // Clear existing contacts
         contactsList.innerHTML = '';
-
         if (contacts.length === 0) {
           emptyState.style.display = 'block';
           return;
@@ -342,10 +341,10 @@
         contacts.forEach(contact => {
           const contactItem = document.createElement('div');
           contactItem.className = 'contact-item';
-          const contactNumber = contact.tel && contact.tel.length > 0 ? contact.tel[0] : 'No number';
+          const contactNumber = contact.phone_number || 'No number';
           contactItem.innerHTML = `
             <div class="contact-content">
-              <div class="contact-name">${contact.name[0] || 'Unknown'}</div>
+              <div class="contact-name">${contact.name || 'Unknown'}</div>
               <div class="contact-number">${contactNumber}</div>
             </div>
             <button class="btn btn-emergency" onclick="callContact('${contactNumber}')">
@@ -358,8 +357,55 @@
           contactsList.appendChild(contactItem);
         });
       } catch (error) {
-        console.error('Error selecting contacts:', error);
+        console.error('Error fetching contacts:', error);
         document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').innerText = 'Failed to load contacts. Please try again.';
+      }
+    }
+
+    // Contact selection and save to backend
+    async function selectContacts() {
+      if (!('contacts' in navigator && 'select' in navigator.contacts)) {
+        document.getElementById('error-message').style.display = 'block';
+        return;
+      }
+
+      try {
+        const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+        const contactsList = document.getElementById('contacts-list');
+        const emptyState = document.getElementById('empty-contacts');
+
+        if (contacts.length === 0) {
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        // Prepare contacts for backend
+        const contactsData = contacts.map(contact => ({
+          name: contact.name[0] || 'Unknown',
+          phone_number: contact.tel && contact.tel.length > 0 ? contact.tel[0] : 'No number'
+        }));
+
+        // Send contacts to backend
+        const response = await fetch('/api/emergency-contacts/', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'), // Assumes JWT or similar token-based auth
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(contactsData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save contacts');
+        }
+
+        // Refresh contacts list
+        await fetchContacts();
+      } catch (error) {
+        console.error('Error selecting or saving contacts:', error);
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').innerText = 'Failed to save contacts. Please try again.';
       }
     }
 
@@ -372,6 +418,9 @@
       alert(`Simulated call to ${number}. In a real app, this would initiate a call.`);
       // In real app, use: window.location.href = `tel:${number}`;
     }
+
+    // Load contacts on page load
+    document.addEventListener('DOMContentLoaded', fetchContacts);
   </script>
 </body>
 </html>

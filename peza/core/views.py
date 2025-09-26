@@ -21,6 +21,185 @@ def login_view(request):
             return render(request, 'login.html', {'error': 'Invalid email or password.'})
     return render(request, 'login.html')
 
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import EmergencyContact
+from .serializers import EmergencyContactSerializer
+from rest_framework.permissions import IsAuthenticated
+
+class EmergencyContactListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        contacts = EmergencyContact.objects.filter(user=request.user)
+        serializer = EmergencyContactSerializer(contacts, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        contacts_data = request.data
+        if not isinstance(contacts_data, list):
+            contacts_data = [contacts_data]
+        
+        responses = []
+        for contact_data in contacts_data:
+            contact_data['user'] = request.user.id
+            serializer = EmergencyContactSerializer(data=contact_data)
+            if serializer.is_valid():
+                serializer.save()
+                responses.append(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(responses, status=status.HTTP_201_CREATED)
+    
+
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import TemplateView, DetailView
+from django.db.models import Q, Value
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404, JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Message, Notification, User, TypingStatus, Profile
+from .serializers import MessageSerializer
+from django.utils import timezone
+
+class InboxView(LoginRequiredMixin, TemplateView):
+    template_name = 'inbox.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        notifs = list(Notification.objects.filter(user=user).values('id', 'title', 'content', 'timestamp', 'is_read', 'type').annotate(item_type=Value('notification')))
+
+        messages = Message.objects.filter(Q(sender=user) | Q(recipient=user)).order_by('-timestamp')
+        conversations = {}
+        for msg in messages:
+            corr = msg.recipient if msg.sender == user else msg.sender
+            if corr not in conversations:
+                conversations[corr] = {
+                    'correspondent': corr,
+                    'latest_message': msg,
+                    'unread_count': 0 if msg.is_read or msg.sender == user else 1
+                }
+            else:
+                if msg.timestamp > conversations[corr]['latest_message'].timestamp:
+                    conversations[corr]['latest_message'] = msg
+                if not msg.is_read and msg.recipient == user:
+                    conversations[corr]['unread_count'] += 1
+
+        convs = []
+        for corr, data in conversations.items():
+            convs.append({
+                'id': corr.id,
+                'correspondent': data['correspondent'],
+                'content': data['latest_message'].content,
+                'timestamp': data['latest_message'].timestamp,
+                'unread_count': data['unread_count'],
+                'item_type': 'conversation'
+            })
+
+        all_items = notifs + convs
+        all_items.sort(key=lambda x: x['timestamp'], reverse=True)
+
+        context['inbox_items'] = all_items
+        return context
+
+class DMView(LoginRequiredMixin, TemplateView):
+    template_name = 'dm.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        other_user_id = self.kwargs['user_id']
+        other_user = get_object_or_404(User, id=other_user_id)
+        
+        messages = Message.objects.filter(
+            (Q(sender=user, recipient=other_user) | Q(sender=other_user, recipient=user))
+        ).order_by('timestamp')
+
+        messages.filter(recipient=user, is_read=False).update(is_read=True)
+
+        context['other_user'] = other_user
+        context['messages'] = messages
+        context['last_message_id'] = messages.last().id if messages.exists() else 0
+        return context
+
+class NotificationDetailView(LoginRequiredMixin, DetailView):
+    model = Notification
+    template_name = 'notification_detail.html'
+    context_object_name = 'notification'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404
+        if not obj.is_read:
+            obj.is_read = True
+            obj.save()
+        return obj
+
+class ComposeView(LoginRequiredMixin, TemplateView):
+    template_name = 'compose.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        users = User.objects.exclude(id=user.id).select_related('profile')
+        context['users'] = users
+        return context
+
+class MessageListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        other_user = get_object_or_404(User, id=user_id)
+        last_id = request.GET.get('last_id', 0)
+        messages = Message.objects.filter(
+            (Q(sender=request.user, recipient=other_user) | Q(sender=other_user, recipient=request.user)),
+            id__gt=last_id
+        ).order_by('timestamp')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, user_id):
+        other_user = get_object_or_404(User, id=user_id)
+        data = request.data
+        data['sender'] = request.user.id
+        data['recipient'] = other_user.id
+        serializer = MessageSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TypingStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        recipient = get_object_or_404(User, id=user_id)
+        is_typing = request.data.get('is_typing', False)
+        TypingStatus.objects.update_or_create(
+            user=request.user,
+            recipient=recipient,
+            defaults={'is_typing': is_typing}
+        )
+        TypingStatus.cleanup_old()
+        return Response({'status': 'updated'}, status=status.HTTP_200_OK)
+
+    def get(self, request, user_id):
+        recipient = get_object_or_404(User, id=user_id)
+        try:
+            status = TypingStatus.objects.get(user=recipient, recipient=request.user)
+            TypingStatus.cleanup_old()
+            return Response({'is_typing': status.is_typing})
+        except TypingStatus.DoesNotExist:
+            return Response({'is_typing': False})
+
 def register(request):
     return render(request, 'register.html')
 
