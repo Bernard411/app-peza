@@ -55,6 +55,7 @@ class EmergencyContactListCreateView(APIView):
         return Response(responses, status=status.HTTP_201_CREATED)
     
 
+
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView, DetailView
 from django.db.models import Q, Value
@@ -63,6 +64,7 @@ from django.http import Http404, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import Message, Notification, User, TypingStatus, Profile
 from .serializers import MessageSerializer
 from django.utils import timezone
@@ -176,6 +178,26 @@ class MessageListCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, message_id):
+        message = get_object_or_404(Message, id=message_id)
+        if message.sender != request.user and message.recipient != request.user:
+            return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
+        message.delete()
+        return Response({'status': 'deleted'}, status=status.HTTP_200_OK)
+
+class ClearChatView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, user_id):
+        other_user = get_object_or_404(User, id=user_id)
+        Message.objects.filter(
+            (Q(sender=request.user, recipient=other_user) | Q(sender=other_user, recipient=request.user))
+        ).delete()
+        return Response({'status': 'chat cleared'}, status=status.HTTP_200_OK)
 
 class TypingStatusView(APIView):
     permission_classes = [IsAuthenticated]

@@ -83,6 +83,7 @@
       border-radius: 12px;
       margin: 4px 8px;
       font-size: 10px;
+      position: relative;
     }
     .sent {
       align-self: flex-end;
@@ -149,6 +150,35 @@
       --border-color: var(--border-light);
       --color: var(--text-primary);
     }
+    .delete-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--emergency, #FF3333);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .encryption-notice {
+      text-align: center;
+      font-size: 8px;
+      color: var(--text-secondary);
+      padding: 4px;
+      background: var(--surface-light);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .clear-chat-btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: none;
+      font-size: 10px;
+      cursor: pointer;
+    }
     @media (max-width: 480px) {
       body { font-size: 8px; }
       .chat-message { font-size: 8px; }
@@ -159,6 +189,9 @@
       .typing-indicator { font-size: 7px; }
       .header-title { font-size: 12px; }
       .header-desc { font-size: 8px; }
+      .encryption-notice { font-size: 7px; }
+      .clear-chat-btn { font-size: 8px; }
+      .delete-btn { width: 20px; height: 20px; font-size: 12px; }
     }
   </style>
 </head>
@@ -178,7 +211,13 @@
             <p class="header-desc text-8px text-gray-400">Direct Message</p>
           </div>
         </div>
+        <button class="clear-chat-btn" onclick="clearChat()">Clear Chat</button>
       </div>
+    </div>
+
+    <!-- Encryption Notice -->
+    <div class="encryption-notice">
+      These messages use end-to-end encryption
     </div>
 
     <!-- Theme Toggle -->
@@ -191,9 +230,10 @@
     <!-- Chat Content -->
     <div class="chat-container content" id="chat-container">
       {% for msg in messages %}
-        <div class="chat-message {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+        <div class="chat-message {% if msg.sender == request.user %}sent{% else %}received{% endif %}" data-message-id="{{ msg.id }}">
           {{ msg.content }}
           <div class="message-time">{{ msg.timestamp|timesince }} ago</div>
+          <div class="delete-btn" onclick="deleteMessage('{{ msg.id }}', this.parentElement)">🗑️</div>
         </div>
       {% endfor %}
       <div id="typing-indicator" class="typing-indicator"></div>
@@ -249,11 +289,14 @@
           const isSent = msg.sender === {{ request.user.id }};
           const messageElement = document.createElement('div');
           messageElement.classList.add('chat-message', isSent ? 'sent' : 'received');
+          messageElement.dataset.messageId = msg.id;
           messageElement.innerHTML = `
             ${msg.content}
             <div class="message-time">just now</div>
+            <div class="delete-btn" onclick="deleteMessage('${msg.id}', this.parentElement)">🗑️</div>
           `;
           chatContainer.insertBefore(messageElement, document.getElementById('typing-indicator'));
+          addLongPressListener(messageElement);
           lastMessageId = Math.max(lastMessageId, msg.id);
         });
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -297,11 +340,14 @@
         .then(data => {
           const messageElement = document.createElement('div');
           messageElement.classList.add('chat-message', 'sent');
+          messageElement.dataset.messageId = data.id;
           messageElement.innerHTML = `
             ${data.content}
             <div class="message-time">just now</div>
+            <div class="delete-btn" onclick="deleteMessage('${data.id}', this.parentElement)">🗑️</div>
           `;
           document.getElementById('chat-container').insertBefore(messageElement, document.getElementById('typing-indicator'));
+          addLongPressListener(messageElement);
           lastMessageId = data.id;
           chatInput.value = '';
           document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
@@ -352,6 +398,71 @@
       document.getElementById('chat-input').focus();
       document.getElementById('chat-input').dispatchEvent(new Event('input'));
     });
+
+    // Long press for delete
+    function addLongPressListener(element) {
+      let pressTimer;
+      element.addEventListener('mousedown', startPress);
+      element.addEventListener('touchstart', startPress);
+      element.addEventListener('mouseup', endPress);
+      element.addEventListener('touchend', endPress);
+      element.addEventListener('mouseleave', endPress);
+      element.addEventListener('touchcancel', endPress);
+
+      function startPress(e) {
+        if (e.type === 'touchstart') e.preventDefault();
+        pressTimer = setTimeout(function() {
+          const deleteBtn = element.querySelector('.delete-btn');
+          deleteBtn.style.display = 'flex';
+        }, 500); // 500ms long press
+      }
+
+      function endPress() {
+        clearTimeout(pressTimer);
+      }
+    }
+
+    // Add long press to existing messages
+    document.querySelectorAll('.chat-message').forEach(addLongPressListener);
+
+    // Delete message
+    function deleteMessage(messageId, element) {
+      fetch(`/api/delete-message/${messageId}/`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          element.remove();
+        } else {
+          alert('Failed to delete message');
+        }
+      })
+      .catch(error => console.error('Error deleting message:', error));
+    }
+
+    // Clear chat
+    function clearChat() {
+      if (confirm('Are you sure you want to clear this chat?')) {
+        fetch(`/api/clear-chat/${otherUserId}/`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            document.querySelectorAll('.chat-message').forEach(el => el.remove());
+            lastMessageId = 0;
+          } else {
+            alert('Failed to clear chat');
+          }
+        })
+        .catch(error => console.error('Error clearing chat:', error));
+      }
+    }
 
     // Auto-scroll to bottom
     document.querySelector('.chat-container').scrollTop = document.querySelector('.chat-container').scrollHeight;

@@ -9,6 +9,9 @@ from .views import InboxView, DMView, NotificationDetailView
 from django.urls import path
 from django.urls import path
 from .views import InboxView, DMView, NotificationDetailView, ComposeView, MessageListCreateView, TypingStatusView
+from django.urls import path
+from .views import InboxView, DMView, NotificationDetailView, ComposeView, MessageListCreateView, TypingStatusView, DeleteMessageView, ClearChatView
+
 
 from .views import InboxView, DMView, NotificationDetailView, ComposeView
 
@@ -45,4 +48,7 @@ urlpatterns = [
     path('compose/', ComposeView.as_view(), name='compose'),
     path('api/messages/<int:user_id>/', MessageListCreateView.as_view(), name='message_list_create'),
     path('api/typing/<int:user_id>/', TypingStatusView.as_view(), name='typing_status'),
+    path('api/delete-message/<int:message_id>/', DeleteMessageView.as_view(), name='delete_message'),
+    path('api/clear-chat/<int:user_id>/', ClearChatView.as_view(), name='clear_chat'),
 ]
+
