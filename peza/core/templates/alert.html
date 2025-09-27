@@ -52,7 +52,7 @@
       font-family: 'Maria', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--surface);
       margin: 0;
-      font-size: 10px; /* Minimized base font size */
+      font-size: 10px;
       overflow: hidden;
       height: 100vh;
       transition: background 0.3s ease;
@@ -80,7 +80,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       padding: 12px;
-      padding-bottom: 70px; /* Adjusted for bottom nav */
+      padding-bottom: 70px;
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -101,7 +101,7 @@
       border-radius: 8px;
       padding: 8px 12px;
       font-weight: 600;
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
@@ -123,7 +123,7 @@
       border-radius: 8px;
       padding: 8px 10px;
       color: var(--text-primary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       transition: border-color 0.3s ease;
     }
     .input:focus {
@@ -131,36 +131,8 @@
       border-color: var(--secondary);
       box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
     }
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border-top: 1px solid var(--border-light);
-      display: flex;
-      justify-content: space-around;
-      padding: 6px 0;
-      z-index: 100;
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text-secondary);
-      text-decoration: none;
-      padding: 4px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      min-width: 45px;
-      font-size: 8px; /* Minimized font size */
-    }
-    .nav-item.active {
-      color: var(--secondary);
-      background: rgba(255, 255, 255, 0.1);
-    }
     .section-title {
-      font-size: 12px; /* Minimized font size */
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-primary);
       margin: 12px 0 8px;
@@ -182,6 +154,14 @@
       display: flex;
       align-items: flex-start;
       gap: 8px;
+      transition: all 0.3s ease;
+    }
+    .alert-item.new-alert {
+      animation: slideInAlert 0.5s ease-in-out;
+    }
+    @keyframes slideInAlert {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
     }
     .alert-icon {
       width: 28px;
@@ -204,28 +184,38 @@
       background: rgba(68, 180, 255, 0.2);
       color: var(--alert-low);
     }
+    .alert-icon.weather {
+      background: rgba(0, 123, 255, 0.2);
+      color: #007bff;
+    }
     .alert-content {
       flex: 1;
     }
     .alert-title {
       font-weight: 600;
       color: var(--text-primary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
       margin-bottom: 3px;
     }
     .alert-message {
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       color: var(--text-secondary);
       margin-bottom: 5px;
     }
+    .alert-recommendation {
+      font-size: 8px;
+      color: var(--accent);
+      font-style: italic;
+      margin-bottom: 3px;
+    }
     .alert-time {
-      font-size: 7px; /* Minimized font size */
+      font-size: 7px;
       color: var(--accent);
     }
     .alert-badge {
       padding: 3px 6px;
       border-radius: 8px;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       font-weight: 600;
       margin-left: 6px;
     }
@@ -241,6 +231,10 @@
       background: var(--alert-low);
       color: white;
     }
+    .alert-badge.weather {
+      background: #007bff;
+      color: white;
+    }
     .search-container {
       position: relative;
       margin-bottom: 12px;
@@ -248,7 +242,7 @@
     .search-input {
       width: 100%;
       padding-left: 28px;
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
     }
     .search-icon {
       position: absolute;
@@ -288,7 +282,7 @@
       margin: 3px;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
     }
     .filter-btn.active {
       background: var(--secondary);
@@ -299,7 +293,7 @@
       text-align: center;
       padding: 24px 12px;
       color: var(--text-secondary);
-      font-size: 10px; /* Minimized font size */
+      font-size: 10px;
     }
     .empty-state svg {
       width: 40px;
@@ -313,9 +307,54 @@
       right: -4px;
       background: var(--alert-high);
       color: white;
-      font-size: 8px; /* Minimized font size */
+      font-size: 8px;
       padding: 2px 5px;
       border-radius: 10px;
+    }
+    .location-info {
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .location-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 123, 255, 0.2);
+      color: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .refresh-btn {
+      position: absolute;
+      top: 12px;
+      left: 50px;
+      z-index: 100;
+      background: var(--surface-light);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    .refresh-btn:active {
+      transform: rotate(180deg);
+    }
+    .refresh-btn svg {
+      width: 16px;
+      height: 16px;
     }
     @media (max-width: 480px) {
       body { font-size: 8px; }
@@ -325,6 +364,7 @@
       .alert-item { padding: 8px; }
       .alert-title { font-size: 8px; }
       .alert-message { font-size: 7px; }
+      .alert-recommendation { font-size: 7px; }
       .alert-time { font-size: 6px; }
       .alert-badge { font-size: 7px; }
       .search-input { font-size: 8px; padding-left: 24px; }
@@ -332,13 +372,15 @@
       .theme-toggle { width: 28px; height: 28px; top: 10px; right: 10px; }
       .theme-toggle svg { width: 14px; height: 14px; }
       .alert-icon { width: 24px; height: 24px; }
-      .alert-icon svg { width: 12px; height: 12px; }
       .filter-btn { font-size: 7px; padding: 5px 8px; }
       .empty-state { font-size: 8px; }
       .empty-state svg { width: 32px; height: 32px; }
       .notification-badge { font-size: 7px; padding: 1px 4px; }
       .header-title { font-size: 12px; }
       .header-desc { font-size: 8px; }
+      .location-info { padding: 8px; }
+      .location-icon { width: 28px; height: 28px; }
+      .refresh-btn { width: 28px; height: 28px; top: 10px; left: 45px; }
     }
   </style>
 </head>
@@ -354,15 +396,15 @@
             </svg>
           </a>
           <div>
-            <h2 class="header-title text-sm font-semibold text-white">Alerts & Notifications</h2>
-            <p class="header-desc text-8px text-gray-400">Stay informed about safety updates</p>
+            <h2 class="header-title text-sm font-semibold text-white">Smart Safety Alerts</h2>
+            <p class="header-desc text-8px text-gray-400">Real-time safety & weather monitoring</p>
           </div>
         </div>
-        <button class="p-1.5 rounded-full bg-white/10 relative">
+        <button class="p-1.5 rounded-full bg-white/10 relative" id="notification-btn">
           <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
           </svg>
-          <span class="notification-badge">3</span>
+          <span class="notification-badge" id="notification-count">0</span>
         </button>
       </div>
       
@@ -382,8 +424,32 @@
       </svg>
     </div>
 
+    <!-- Refresh Button -->
+    <div class="refresh-btn" onclick="refreshAlerts()">
+      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    </div>
+
     <!-- Main Content -->
     <div class="content">
+      <!-- Current Location & Weather -->
+      <div class="px-4 mb-4">
+        <div class="location-info">
+          <div class="location-icon">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div class="alert-title" id="location-name">Getting location...</div>
+            <div class="alert-message" id="weather-details">Loading weather data...</div>
+            <div class="alert-time" id="current-time">--:--:--</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Alert Filters -->
       <div class="px-4 mb-4">
         <div class="flex flex-wrap gap-1.5">
@@ -391,6 +457,8 @@
           <button class="filter-btn" onclick="filterAlerts('high')">High Priority</button>
           <button class="filter-btn" onclick="filterAlerts('medium')">Medium Priority</button>
           <button class="filter-btn" onclick="filterAlerts('low')">Low Priority</button>
+          <button class="filter-btn" onclick="filterAlerts('weather')">Weather</button>
+          <button class="filter-btn" onclick="filterAlerts('safety')">Safety</button>
         </div>
       </div>
 
@@ -400,71 +468,34 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          Active Alerts
+          Live Alerts (<span id="alert-count">0</span>)
         </h3>
         
         <div id="alerts-list">
-          <!-- High Priority Alert -->
-          <div class="alert-item" data-priority="high">
-            <div class="alert-icon high">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <div class="alert-content">
-              <div class="flex items-center">
-                <div class="alert-title">Power Outage Reported</div>
-                <span class="alert-badge high">High</span>
-              </div>
-              <div class="alert-message">Unexpected power outage in your area. Expected restoration in 2-3 hours.</div>
-              <div class="alert-time">10 minutes ago • 1.2 km away</div>
-            </div>
-          </div>
-          
-          <!-- Medium Priority Alert -->
-          <div class="alert-item" data-priority="medium">
-            <div class="alert-icon medium">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div class="alert-content">
-              <div class="flex items-center">
-                <div class="alert-title">Water Supply Interruption</div>
-                <span class="alert-badge medium">Medium</span>
-              </div>
-              <div class="alert-message">Scheduled maintenance affecting water supply in central district.</div>
-              <div class="alert-time">2 hours ago • 3.5 km away</div>
-            </div>
-          </div>
-          
-          <!-- Low Priority Alert -->
-          <div class="alert-item" data-priority="low">
-            <div class="alert-icon low">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div class="alert-content">
-              <div class="flex items-center">
-                <div class="alert-title">Road Maintenance</div>
-                <span class="alert-badge low">Low</span>
-              </div>
-              <div class="alert-message">Minor roadworks on Main Street causing light traffic delays.</div>
-              <div class="alert-time">5 hours ago • 0.8 km away</div>
-            </div>
-          </div>
+          <!-- Dynamic alerts will be inserted here -->
+        </div>
+
+        <div id="no-alerts" class="empty-state" style="display: none;">
+          <svg class="mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p>All clear! No active alerts.</p>
+          <p class="text-xs mt-1">Smart monitoring is active.</p>
         </div>
       </div>
-
-      
     </div>
 
-    <!-- Bottom Navigation -->
-    {% include 'bottom_nav.html' %}
+    <!-- Bottom Navigation Placeholder -->
+    <div style="height: 60px; background: var(--surface); border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 8px;">
+      Bottom Navigation Here
+    </div>
   </div>
 
   <script>
+    const apiKey = 'b0497bc522524401831134643231610';
+    let currentAlerts = [];
+    let weatherData = null;
+
     // Theme toggle
     function toggleTheme() {
       const body = document.body;
@@ -479,51 +510,379 @@
       }
     }
 
-    // Emergency call simulation
-    function callEmergency(number, service) {
-      alert(`Calling ${service} at ${number}... (Simulated for demo)`);
+    function getAlertIcon(type, severity) {
+      const icons = {
+        safety: {
+          high: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />',
+          medium: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />',
+          low: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'
+        },
+        weather: {
+          rain: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 13v6m4-6v6m4-6v6M3 16.5a3.5 3.5 0 017 0A2.5 2.5 0 0012.5 21h-9z" />',
+          sun: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />',
+          snow: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />',
+          wind: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />',
+          default: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />'
+        }
+      };
+      
+      if (type === 'weather') {
+        return icons.weather.default;
+      }
+      return icons.safety[severity] || icons.safety.low;
     }
 
-    // Filter alerts by priority
-    function filterAlerts(priority) {
+    function createAlertElement(alert) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert-item new-alert`;
+      alertDiv.setAttribute('data-priority', alert.severity);
+      alertDiv.setAttribute('data-type', alert.type);
+      
+      const iconClass = alert.type === 'weather' ? 'weather' : alert.severity;
+      const badgeClass = alert.type === 'weather' ? 'weather' : alert.severity;
+      
+      alertDiv.innerHTML = `
+        <div class="alert-icon ${iconClass}">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${getAlertIcon(alert.type, alert.severity)}
+          </svg>
+        </div>
+        <div class="alert-content">
+          <div class="flex items-center">
+            <div class="alert-title">${alert.title}</div>
+            <span class="alert-badge ${badgeClass}">${alert.type === 'weather' ? 'Weather' : alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)}</span>
+          </div>
+          <div class="alert-message">${alert.message}</div>
+          ${alert.recommendation ? `<div class="alert-recommendation">💡 ${alert.recommendation}</div>` : ''}
+          <div class="alert-time">${new Date().toLocaleTimeString()} • Live Alert</div>
+        </div>
+      `;
+      
+      return alertDiv;
+    }
+
+    function checkTimeBasedAlerts(hour) {
+      const alerts = [];
+      
+      if (hour >= 22 || hour <= 5) {
+        const severity = (hour >= 0 && hour <= 3) ? 'high' : 'medium';
+        const message = hour >= 0 && hour <= 3 
+          ? "Very dangerous time to be outside. High risk of mugging and criminal activity."
+          : "Late night/early morning hours. Increased risk when walking alone.";
+        
+        alerts.push({
+          type: 'safety',
+          title: '🌙 Safety Alert - Dangerous Hours',
+          message: message,
+          recommendation: "Avoid walking alone. Use ride services or travel in groups. Stay in well-lit areas.",
+          severity: severity
+        });
+      }
+
+      if (hour >= 6 && hour <= 8) {
+        alerts.push({
+          type: 'safety',
+          title: '🌅 Morning Rush Hour',
+          message: "Heavy traffic hours. Be extra careful when crossing roads.",
+          recommendation: "Allow extra time for travel. Use crosswalks and stay alert.",
+          severity: 'medium'
+        });
+      }
+
+      if (hour >= 17 && hour <= 19) {
+        alerts.push({
+          type: 'safety',
+          title: '🌆 Evening Rush Hour',
+          message: "Heavy traffic hours. Increased pedestrian and vehicle activity.",
+          recommendation: "Be extra cautious. Avoid busy roads when possible.",
+          severity: 'medium'
+        });
+      }
+
+      return alerts;
+    }
+
+    function checkWeatherAlerts(weatherData) {
+      const alerts = [];
+      const temp = weatherData.current.temp_c;
+      const condition = weatherData.current.condition.text.toLowerCase();
+      const humidity = weatherData.current.humidity;
+      const windSpeed = weatherData.current.wind_kph;
+      const uvIndex = weatherData.current.uv;
+
+      // Temperature alerts
+      if (temp > 35) {
+        alerts.push({
+          type: 'weather',
+          title: '🌡️ Extreme Heat Warning',
+          message: `Very hot temperature: ${temp}°C. Risk of heat exhaustion.`,
+          recommendation: "Carry plenty of water. Wear light colors. Avoid prolonged sun exposure.",
+          severity: 'high'
+        });
+      } else if (temp > 30) {
+        alerts.push({
+          type: 'weather',
+          title: '☀️ Hot Weather Advisory',
+          message: `Hot temperature: ${temp}°C. Stay hydrated.`,
+          recommendation: "Bring water. Wear sunscreen and light clothing.",
+          severity: 'medium'
+        });
+      } else if (temp < 5) {
+        alerts.push({
+          type: 'weather',
+          title: '🥶 Cold Weather Warning',
+          message: `Very cold: ${temp}°C. Risk of hypothermia.`,
+          recommendation: "Dress warmly in layers. Cover exposed skin.",
+          severity: 'high'
+        });
+      }
+
+      // Precipitation alerts
+      if (condition.includes('rain') || condition.includes('shower') || condition.includes('drizzle')) {
+        alerts.push({
+          type: 'weather',
+          title: '🌧️ Rain Alert',
+          message: "It's raining. Slippery conditions expected.",
+          recommendation: "Carry an umbrella. Wear non-slip shoes. Drive carefully.",
+          severity: 'medium'
+        });
+      }
+
+      if (condition.includes('snow') || condition.includes('blizzard')) {
+        alerts.push({
+          type: 'weather',
+          title: '❄️ Snow Alert',
+          message: "Snow conditions. Very slippery roads and walkways.",
+          recommendation: "Wear warm, waterproof clothing. Use caution when walking/driving.",
+          severity: 'high'
+        });
+      }
+
+      if (condition.includes('thunderstorm') || condition.includes('storm')) {
+        alerts.push({
+          type: 'weather',
+          title: '⛈️ Storm Warning',
+          message: "Thunderstorm conditions. Lightning risk.",
+          recommendation: "Stay indoors if possible. Avoid open areas and tall objects.",
+          severity: 'high'
+        });
+      }
+
+      // Wind alerts
+      if (windSpeed > 40) {
+        alerts.push({
+          type: 'weather',
+          title: '💨 High Wind Alert',
+          message: `Strong winds: ${windSpeed} km/h. Falling objects risk.`,
+          recommendation: "Secure loose items. Be careful near trees and buildings.",
+          severity: 'high'
+        });
+      }
+
+      // UV alerts
+      if (uvIndex > 7) {
+        alerts.push({
+          type: 'weather',
+          title: '☀️ High UV Index',
+          message: `UV Index: ${uvIndex}. High risk of sunburn.`,
+          recommendation: "Use SPF 30+ sunscreen. Wear sunglasses and hat.",
+          severity: 'medium'
+        });
+      }
+
+      // Humidity alerts
+      if (humidity > 80) {
+        alerts.push({
+          type: 'weather',
+          title: '💧 High Humidity',
+          message: `Very humid: ${humidity}%. Feels hotter than actual temperature.`,
+          recommendation: "Stay hydrated. Take breaks in air conditioning.",
+          severity: 'low'
+        });
+      }
+
+      return alerts;
+    }
+
+    function displayAlerts(alerts) {
+      const container = document.getElementById('alerts-list');
+      const noAlertsDiv = document.getElementById('no-alerts');
+      const alertCount = document.getElementById('alert-count');
+      const notificationCount = document.getElementById('notification-count');
+      
+      container.innerHTML = '';
+      
+      if (alerts.length === 0) {
+        noAlertsDiv.style.display = 'block';
+        alertCount.textContent = '0';
+        notificationCount.textContent = '0';
+        return;
+      }
+
+      noAlertsDiv.style.display = 'none';
+      alertCount.textContent = alerts.length;
+      notificationCount.textContent = alerts.length;
+      
+      alerts.forEach(alert => {
+        const alertElement = createAlertElement(alert);
+        container.appendChild(alertElement);
+      });
+    }
+
+    function updateTimeAndAlerts() {
+      const now = new Date();
+      const hour = now.getHours();
+      const timeString = now.toLocaleTimeString();
+      
+      document.getElementById('current-time').textContent = `Last updated: ${timeString}`;
+      
+      // Get time-based alerts
+      const timeAlerts = checkTimeBasedAlerts(hour);
+      
+      // Combine with weather alerts
+      let allAlerts = [...timeAlerts];
+      if (weatherData) {
+        const weatherAlerts = checkWeatherAlerts(weatherData);
+        allAlerts = [...allAlerts, ...weatherAlerts];
+      }
+      
+      currentAlerts = allAlerts;
+      displayAlerts(allAlerts);
+    }
+
+    function fetchWeatherAndAlerts() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+          
+          fetch(weatherAPI)
+            .then(response => response.json())
+            .then(data => {
+              weatherData = data;
+              
+              // Update location and weather display
+              const temp = data.current.temp_c;
+              const condition = data.current.condition.text;
+              const humidity = data.current.humidity;
+              const locationName = data.location.name + ', ' + data.location.region;
+              
+              document.getElementById('location-name').textContent = locationName;
+              document.getElementById('weather-details').textContent = 
+                `${temp}°C • ${condition} • ${humidity}% humidity`;
+              
+              // Update alerts
+              updateTimeAndAlerts();
+            })
+            .catch(error => {
+              document.getElementById('location-name').textContent = 'Location unavailable';
+              document.getElementById('weather-details').textContent = 'Weather data unavailable';
+              console.error('Weather API error:', error);
+              
+              // Still show time-based alerts
+              updateTimeAndAlerts();
+            });
+        }, function(error) {
+          document.getElementById('location-name').textContent = 'Location access denied';
+          document.getElementById('weather-details').textContent = 'Enable location access for weather alerts';
+          updateTimeAndAlerts();
+        });
+      } else {
+        document.getElementById('location-name').textContent = 'Geolocation not supported';
+        document.getElementById('weather-details').textContent = 'Browser does not support location services';
+        updateTimeAndAlerts();
+      }
+    }
+
+    function refreshAlerts() {
+      const refreshBtn = document.querySelector('.refresh-btn');
+      refreshBtn.style.transform = 'rotate(360deg)';
+      
+      fetchWeatherAndAlerts();
+      
+      setTimeout(() => {
+        refreshBtn.style.transform = 'rotate(0deg)';
+      }, 500);
+    }
+
+    // Filter alerts by priority or type
+    function filterAlerts(filter) {
       const alerts = document.querySelectorAll('.alert-item');
       const filterButtons = document.querySelectorAll('.filter-btn');
       
       filterButtons.forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       
+      let visibleCount = 0;
       alerts.forEach(alert => {
-        if (priority === 'all' || alert.getAttribute('data-priority') === priority) {
+        const priority = alert.getAttribute('data-priority');
+        const type = alert.getAttribute('data-type');
+        
+        if (filter === 'all' || 
+            priority === filter || 
+            type === filter) {
           alert.style.display = 'flex';
+          visibleCount++;
         } else {
           alert.style.display = 'none';
         }
       });
+      
+      // Update counts
+      document.getElementById('alert-count').textContent = visibleCount;
+      document.getElementById('no-alerts').style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     // Search functionality
     document.getElementById('alertSearch').addEventListener('input', function(e) {
       const searchTerm = e.target.value.toLowerCase();
       const alerts = document.querySelectorAll('.alert-item');
+      let visibleCount = 0;
       
       alerts.forEach(alert => {
         const title = alert.querySelector('.alert-title').textContent.toLowerCase();
         const message = alert.querySelector('.alert-message').textContent.toLowerCase();
+        const recommendation = alert.querySelector('.alert-recommendation');
+        const recText = recommendation ? recommendation.textContent.toLowerCase() : '';
         
-        if (title.includes(searchTerm) || message.includes(searchTerm)) {
+        if (title.includes(searchTerm) || 
+            message.includes(searchTerm) || 
+            recText.includes(searchTerm)) {
           alert.style.display = 'flex';
+          visibleCount++;
         } else {
           alert.style.display = 'none';
         }
       });
+      
+      document.getElementById('alert-count').textContent = visibleCount;
+      document.getElementById('no-alerts').style.display = visibleCount === 0 ? 'block' : 'none';
     });
 
     // Mark alert as read when clicked
-    document.querySelectorAll('.alert-item').forEach(alert => {
-      alert.addEventListener('click', function() {
-        this.style.opacity = '0.7';
-      });
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.alert-item')) {
+        const alertItem = e.target.closest('.alert-item');
+        alertItem.style.opacity = '0.7';
+        alertItem.style.transform = 'scale(0.98)';
+        
+        setTimeout(() => {
+          alertItem.style.opacity = '1';
+          alertItem.style.transform = 'scale(1)';
+        }, 200);
+      }
     });
+
+    // Initialize the app
+    updateTimeAndAlerts();
+    fetchWeatherAndAlerts();
+
+    // Update time every second, refresh alerts every 5 minutes
+    setInterval(updateTimeAndAlerts, 1000);
+    setInterval(fetchWeatherAndAlerts, 300000);
+
+  // Demo static alerts removed. Only live alerts will be shown.
   </script>
 </body>
 </html>
