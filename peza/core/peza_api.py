@@ -11,7 +11,7 @@ def peza_api(request):
     lat = request.GET.get('lat', '-13.9626')  # Default: Lilongwe
     lon = request.GET.get('lon', '33.7741')
     category = request.GET.get('category', 'all')
-    radius = 10000  # 10 km
+    radius = 1000  # 10 km
 
     # Map service to Overpass API tags
     category_map = {
