@@ -1,0 +1,104 @@
+
+    
+          <!-- Left side columns -->
+          <div class="col-lg-12">
+            <div class="row">
+    
+              <!-- Model Predictions Card -->
+              <div class="col-xxl-4 col-md-6">
+                <div class="card info-card model-predictions-card">
+    
+                  <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                   
+                  </div>
+    
+                  <div class="card-body">
+                    <h5 class="card-title"><span>current location:</span></h5>
+    
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="bi bi-cloud-rain"></i>
+                      </div>
+                      <div class="ps-3">
+                        <p id="temperature" style="font-size: x-small; font-weight: bold;">Loading...</p>
+                        <p id="clock" style="font-size: x-small; font-weight: bold; margin-top:4px;"></p>
+                        <p id="safety-alert" style="font-size: x-small; font-weight: bold; color: red; margin-top:4px;"></p>
+                       
+                      </div>
+                    </div>
+                  </div>
+    
+              
+              <script>
+                // JavaScript for fetching weather and date information
+        function fetchWeatherAndDate() {
+          const apiKey = 'b0497bc522524401831134643231610';
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              const weatherAPI = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}`;
+              fetch(weatherAPI)
+                .then(response => response.json())
+                .then(data => {
+                  const temperature = data.current.temp_c;
+                  const condition = data.current.condition.text;
+                  const humidity = data.current.humidity;
+                  const locationName = data.location.name + ', ' + data.location.region;
+                  document.getElementById('temperature').textContent = `${temperature}°C, ${condition}, Humidity: ${humidity}%`;
+                  document.querySelector('.card-title span').textContent = `current location: ${locationName}`;
+                })
+                .catch(error => {
+                  document.getElementById('temperature').textContent = 'Unable to fetch weather.';
+                  console.error('Error fetching weather data: ', error);
+                });
+            }, function(error) {
+              document.getElementById('temperature').textContent = 'Location access denied.';
+            });
+          } else {
+            document.getElementById('temperature').textContent = 'Geolocation not supported.';
+          }
+        }
+
+        fetchWeatherAndDate();
+
+        // Real-time clock and safety alert
+        function updateClockAndAlert() {
+          const now = new Date();
+          const hours = now.getHours();
+          const minutes = String(now.getMinutes()).padStart(2, '0');
+          const seconds = String(now.getSeconds()).padStart(2, '0');
+          const timeString = `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+          document.getElementById('clock').textContent = `Time: ${timeString}`;
+
+          // Safety alert logic: between 0:00 and 5:00, and after 22:00
+          let alertMsg = '';
+          if (hours >= 0 && hours < 5) {
+            alertMsg = 'Warning: It is very risky to walk outside at this time (midnight to dawn).';
+          } else if (hours >= 22) {
+            alertMsg = 'Caution: Walking outside late at night increases risk of mugging.';
+          } else {
+            alertMsg = '';
+          }
+          document.getElementById('safety-alert').textContent = alertMsg;
+        }
+        setInterval(updateClockAndAlert, 1000);
+        updateClockAndAlert();
+
+        // Example: Weather-based alert using OpenWeather API (structure only)
+        // You can replace the weatherAPI call above with OpenWeather if you want more alerts
+        // const openWeatherAPI = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_OPENWEATHER_API_KEY&units=metric`;
+        // fetch(openWeatherAPI)
+        //   .then(response => response.json())
+        //   .then(data => {
+        //     if (data.weather[0].main === 'Rain') {
+        //       document.getElementById('safety-alert').textContent += ' It is raining. Please carry an umbrella and be careful.';
+        //     }
+        //   });
+            </script>
+            <main>
+           
+    
+            
+          
