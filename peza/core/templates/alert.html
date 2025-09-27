@@ -564,7 +564,7 @@
     function checkTimeBasedAlerts(hour) {
       const alerts = [];
       
-      if (hour >= 22 || hour <= 5) {
+      if (hour >= 21 || hour <= 5) {
         const severity = (hour >= 0 && hour <= 3) ? 'high' : 'medium';
         const message = hour >= 0 && hour <= 3 
           ? "Very dangerous time to be outside. High risk of mugging and criminal activity."
